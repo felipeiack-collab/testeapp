@@ -82,8 +82,22 @@
 
   // ---------- Estado ----------
   var CHAVE = 'ponto:estado';
-  var padrao = { metodo: 'pano', sintoma: 'amargo', nota: 3, dica: 0, salvo: { metodo: 'pano', sintoma: 'amargo' }, xicaras: 7 };
+  var CAFE_EXEMPLO = { nome: 'Sítio Boa Vista', torrefacao: null, produtor: null, regiao: 'Cerrado Mineiro', variedade: 'Catuaí Amarelo', processo: null, torra: 'média', pontuacao_sca: null, notas: [], origem: 'exemplo' };
+  var CAFE_VAZIO = { nome: null, torrefacao: null, produtor: null, regiao: null, variedade: null, processo: null, torra: null, pontuacao_sca: null, notas: [] };
+  var PROCESSOS = ['natural', 'lavado', 'cereja descascado', 'honey', 'fermentado'];
+  var TORRAS = ['clara', 'média', 'média-escura', 'escura'];
+
+  var padrao = { metodo: 'pano', sintoma: 'amargo', nota: 3, dica: 0, salvo: { metodo: 'pano', sintoma: 'amargo' }, xicaras: 7, cafe: CAFE_EXEMPLO, retorno: null };
   var estado = carregar();
+  // Só em memória (não vai para o armazenamento do navegador)
+  var sessao = { lendo: false, foto: null, rascunho: null };
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function copia(o) { return JSON.parse(JSON.stringify(o)); }
 
   function carregar() {
     try {
@@ -136,6 +150,37 @@
     return dias[d.getDay()] + ' · ' + d.getDate() + ' ' + meses[d.getMonth()];
   }
 
+  function linhaCafe(c) {
+    return [c.variedade, c.torra ? 'torra ' + c.torra : null, c.processo, c.regiao].filter(Boolean).map(esc).join(' · ');
+  }
+
+  function cartaoCafe() {
+    if (sessao.lendo) {
+      return '<div class="cafe" aria-busy="true"><div class="pacote"><span class="girando" aria-hidden="true"></span></div>' +
+        '<div style="display:flex;flex-direction:column;gap:3px;flex:1"><span class="rotulo bronze" style="font-size:10px">Lendo o rótulo</span>' +
+        '<span class="serif" style="font-size:22px">Um instante…</span><span style="font-size:12px;color:var(--texto-3)">Identificando origem, torra e notas.</span></div></div>';
+    }
+    var c = estado.cafe || CAFE_EXEMPLO;
+    var rotulos = { foto: 'Lido da foto', manual: 'Informado por você', exemplo: 'Exemplo · fotografe o seu' };
+    var miniatura = sessao.foto && c.origem === 'foto' ? '<img src="' + sessao.foto + '" alt="">' : ic.grao;
+    return '<div class="cafe"><div class="pacote">' + miniatura + '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0"><span class="rotulo bronze" style="font-size:10px">' + (rotulos[c.origem] || rotulos.manual) + '</span>' +
+      '<span class="serif" style="font-size:22px">' + esc(c.nome || c.torrefacao || 'Café sem nome') + '</span>' +
+      '<span style="font-size:12px;color:var(--texto-3)">' + (linhaCafe(c) || 'Toque na câmera para ler o rótulo') + '</span></div>' +
+      '<button type="button" class="btn-icone" data-acao="foto" aria-label="Fotografar o pacote">' + ic.camera + '</button></div>' +
+      '<div class="acoes-cafe"><button type="button" class="link" data-acao="foto">Fotografar pacote</button><button type="button" class="link" data-acao="manual">Preencher à mão</button></div>';
+  }
+
+  function campo(id, rotulo, valor, dica) {
+    return '<label class="campo-form" for="f-' + id + '"><span class="rotulo">' + rotulo + '</span>' +
+      '<input id="f-' + id + '" name="' + id + '" value="' + esc(valor) + '" placeholder="' + esc(dica || '') + '" autocomplete="off"></label>';
+  }
+  function seletor(id, rotulo, valor, opcoes) {
+    return '<label class="campo-form" for="f-' + id + '"><span class="rotulo">' + rotulo + '</span><select id="f-' + id + '" name="' + id + '">' +
+      '<option value="">Não sei</option>' + opcoes.map(function (o) { return '<option' + (o === valor ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') +
+      '</select></label>';
+  }
+
   // ---------- Telas ----------
   var telas = {
     abertura: function () {
@@ -184,10 +229,7 @@
       return '<section class="tela"><div class="conteudo" style="gap:22px">' +
         '<div class="cabecalho"><a class="btn-icone" href="#/inicio" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">Leva 15 segundos' + ic.mini + '</span></div>' +
         '<h1 class="titulo">Como foi<br>o café de hoje?</h1>' +
-        '<div class="cafe"><div class="pacote">' + ic.grao + '</div>' +
-        '<div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0"><span class="rotulo bronze" style="font-size:10px">Reconhecido pela foto</span>' +
-        '<span class="serif" style="font-size:22px">Sítio Boa Vista</span><span style="font-size:12px;color:var(--texto-3)">Catuaí Amarelo · torra média · Cerrado Mineiro</span></div>' +
-        '<button type="button" class="btn-icone" data-acao="foto" aria-label="Fotografar outro pacote">' + ic.camera + '</button></div>' +
+        cartaoCafe() +
         '<div class="campo"><span class="rotulo" id="r-metodo">Método</span><div class="chips" role="group" aria-labelledby="r-metodo">' + chipsM + '</div></div>' +
         '<div class="campo"><span class="rotulo" id="r-sintoma">Como ficou na boca</span><div class="grade-2" role="group" aria-labelledby="r-sintoma">' + chipsS + '</div></div>' +
         '<div class="linha-topo" style="align-items:center"><span class="rotulo" id="r-nota">Nota em pontos</span><div class="pontos" role="group" aria-labelledby="r-nota">' + pontos + '</div></div>' +
@@ -210,6 +252,9 @@
         '<div class="cabecalho"><a class="btn-icone" href="#/registrar" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">' + s.nome + ' · ' + m.nome + ic.mini + '</span></div>' +
         '<div style="display:flex;flex-direction:column;gap:8px"><h1 class="titulo g">' + s.titulo + '</h1><p class="corpo">' + s.texto + '</p></div>' +
         '<div class="dicas">' + dicas + '</div>' +
+        (estado.retorno && estado.retorno.metodo === estado.metodo && estado.retorno.dica
+          ? '<div class="cartao" style="gap:6px"><span class="rotulo bronze" style="font-size:10px">Sobre ' + esc(estado.cafe.nome || 'este café') + '</span><p class="corpo" style="font-size:13px">' + esc(estado.retorno.dica) + '</p></div>'
+          : '') +
         '<div class="cartao"><span class="rotulo bronze">Receita para amanhã</span>' +
         '<div class="receita"><div><span class="numero">' + r[0] + '</span><small>Café</small></div><div><span class="numero">' + r[1] + '</span><small>ml água</small></div><div><span class="numero">' + r[2] + '</span><small>' + s.rotTemp + '</small></div><div><span class="numero">' + r[3] + '</span><small>Tempo</small></div></div>' +
         '<p class="nota-metodo">' + m.nota + ' Sem balança? 1 colher de sopa cheia ≈ 7 g.</p></div>' +
@@ -229,6 +274,34 @@
         '<div class="cartao destaque" style="gap:6px"><span class="rotulo bronze" style="font-size:10px">Agora</span><span class="serif" style="font-size:24px;line-height:1.1">Especial natural do Sul de Minas</span><span style="font-size:13px;color:var(--texto-3)">Mais doçura, chocolate ao leite · [PREÇO]</span></div></div>' +
         '<div class="chips"><span class="tag">Chocolate · 5×</span><span class="tag">Caramelo · 3×</span><span class="tag apagada">Frutado · não curtiu</span></div>' +
         '</div>' + nav('paladar') + '</section>';
+    },
+
+    confirmar: function () {
+      var r = sessao.rascunho || { cafe: copia(CAFE_VAZIO), origem: 'manual' };
+      var c = r.cafe;
+      var porFoto = r.origem === 'foto';
+      var conf = { alta: 'Rótulo bem legível', media: 'Leitura parcial, confira', baixa: 'Leitura difícil, confira com atenção' };
+      var topo = porFoto
+        ? '<span class="rotulo bronze">Confira os dados</span><h1 class="titulo">Foi isso que<br>li no rótulo.</h1><p class="corpo">' + esc(conf[r.confianca] || conf.baixa) + '. Corrija o que estiver errado.</p>'
+        : '<span class="rotulo bronze">Seu café</span><h1 class="titulo">Conte qual café<br>você tomou.</h1><p class="corpo">' + (r.erro ? esc(r.erro) + ' ' : '') + 'Preencha só o que souber.</p>';
+      var retorno = porFoto && (r.resumo || r.dica)
+        ? '<div class="cartao destaque" style="gap:8px"><span class="rotulo bronze" style="font-size:10px">O que esperar</span>' +
+          (r.resumo ? '<p class="corpo" style="color:var(--leite)">' + esc(r.resumo) + '</p>' : '') +
+          (r.dica ? '<p class="corpo" style="font-size:13px">' + esc(r.dica) + '</p>' : '') + '</div>'
+        : '';
+      var foto = porFoto && sessao.foto ? '<img class="foto-lida" src="' + sessao.foto + '" alt="Foto do pacote enviada">' : '';
+      return '<section class="tela"><form class="conteudo" id="form-cafe" novalidate>' +
+        '<div class="cabecalho"><a class="btn-icone" href="#/registrar" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">' + (porFoto ? 'Lido da foto' : 'Preenchimento manual') + ic.mini + '</span></div>' +
+        '<div style="display:flex;gap:16px;align-items:flex-start">' + foto + '<div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0">' + topo + '</div></div>' +
+        retorno +
+        campo('nome', 'Nome do café ou lote', c.nome, 'Ex.: Sítio Boa Vista') +
+        campo('torrefacao', 'Torrefação ou marca', c.torrefacao, 'Ex.: Torrefação do bairro') +
+        '<div class="grade-2" style="gap:12px">' + campo('regiao', 'Região', c.regiao, 'Ex.: Sul de Minas') + campo('variedade', 'Variedade', c.variedade, 'Ex.: Catuaí') + '</div>' +
+        '<div class="grade-2" style="gap:12px">' + seletor('processo', 'Processo', c.processo, PROCESSOS) + seletor('torra', 'Torra', c.torra, TORRAS) + '</div>' +
+        campo('notas', 'Notas do rótulo', (c.notas || []).join(', '), 'Ex.: chocolate, caramelo') +
+        '<button type="submit" class="btn" style="margin-top:8px">Usar este café</button>' +
+        '<button type="button" class="btn contorno" data-acao="foto">' + (porFoto ? 'Tirar outra foto' : 'Fotografar o pacote') + '</button>' +
+        '</form><div class="aviso" id="aviso" role="status"></div></section>';
     },
 
     comunidade: function () {
@@ -254,7 +327,7 @@
     app.innerHTML = telas[r]();
     var nova = app.querySelector('.tela');
     if (nova) nova.scrollTop = y;
-    var titulos = { abertura: 'Ponto — Encontre o seu ponto', inicio: 'Início · Ponto', registrar: 'Registrar · Ponto', ajuste: 'Ajuste · Ponto', paladar: 'Meu paladar · Ponto', comunidade: 'Comunidade · Ponto' };
+    var titulos = { abertura: 'Ponto — Encontre o seu ponto', inicio: 'Início · Ponto', registrar: 'Registrar · Ponto', ajuste: 'Ajuste · Ponto', paladar: 'Meu paladar · Ponto', confirmar: 'Confira os dados · Ponto', comunidade: 'Comunidade · Ponto' };
     document.title = titulos[r];
   }
 
@@ -275,7 +348,13 @@
     else if (acao === 'sintoma') { estado.sintoma = id; estado.dica = 0; }
     else if (acao === 'nota') { estado.nota = Number(id); }
     else if (acao === 'dica') { estado.dica = Number(id); }
-    else if (acao === 'foto') { return; }
+    else if (acao === 'foto') { if (!sessao.lendo) document.getElementById('foto-input').click(); return; }
+    else if (acao === 'manual') {
+      var base = estado.cafe && estado.cafe.origem !== 'exemplo' ? copia(estado.cafe) : copia(CAFE_VAZIO);
+      sessao.rascunho = { cafe: base, origem: 'manual' };
+      if (rota() === 'confirmar') render(false); else location.hash = '#/confirmar';
+      return;
+    }
     else if (acao === 'loja') { ev.preventDefault(); avisar('Link do parceiro ainda não configurado.'); return; }
     else if (acao === 'salvar') {
       estado.salvo = { metodo: estado.metodo, sintoma: estado.sintoma };
@@ -286,6 +365,83 @@
     }
     guardar();
     render(true);
+  });
+
+  // ---------- Foto ----------
+  function comprimir(arquivo) {
+    return new Promise(function (ok, falha) {
+      var leitor = new FileReader();
+      leitor.onerror = function () { falha(new Error('leitura')); };
+      leitor.onload = function () {
+        var img = new Image();
+        img.onerror = function () { falha(new Error('imagem')); };
+        img.onload = function () {
+          var max = 1280;
+          var escala = Math.min(1, max / Math.max(img.width, img.height));
+          var w = Math.round(img.width * escala), h = Math.round(img.height * escala);
+          var tela = document.createElement('canvas');
+          tela.width = w; tela.height = h;
+          tela.getContext('2d').drawImage(img, 0, 0, w, h);
+          ok(tela.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = leitor.result;
+      };
+      leitor.readAsDataURL(arquivo);
+    });
+  }
+
+  function irParaConfirmar() {
+    if (rota() === 'confirmar') render(false); else location.hash = '#/confirmar';
+  }
+
+  function lerFoto(arquivo) {
+    sessao.lendo = true;
+    if (rota() !== 'registrar') location.hash = '#/registrar'; else render(true);
+    comprimir(arquivo).then(function (dataUrl) {
+      sessao.foto = dataUrl;
+      return fetch('/api/identificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imagem: dataUrl.split(',')[1], media_type: 'image/jpeg', metodo: estado.metodo })
+      }).then(function (resp) {
+        return resp.json().catch(function () { return {}; }).then(function (dados) {
+          if (!resp.ok) { throw new Error(dados.mensagem || 'Não consegui ler a foto agora. Preencha à mão.'); }
+          return dados;
+        });
+      });
+    }).then(function (dados) {
+      sessao.rascunho = { cafe: dados.cafe, origem: 'foto', confianca: dados.confianca, resumo: dados.resumo, dica: dados.dica };
+    }).catch(function (erro) {
+      var msg = erro && erro.message && erro.message !== 'Failed to fetch' ? erro.message : 'Sem conexão com o serviço de leitura.';
+      sessao.rascunho = { cafe: copia(CAFE_VAZIO), origem: 'manual', erro: msg };
+    }).then(function () {
+      sessao.lendo = false;
+      irParaConfirmar();
+    });
+  }
+
+  document.getElementById('foto-input').addEventListener('change', function (ev) {
+    var arquivo = ev.target.files && ev.target.files[0];
+    ev.target.value = '';
+    if (arquivo) lerFoto(arquivo);
+  });
+
+  app.addEventListener('submit', function (ev) {
+    if (ev.target.id !== 'form-cafe') return;
+    ev.preventDefault();
+    var f = new FormData(ev.target);
+    var val = function (k) { var v = String(f.get(k) || '').trim(); return v || null; };
+    var r = sessao.rascunho || { origem: 'manual' };
+    estado.cafe = {
+      nome: val('nome'), torrefacao: val('torrefacao'), produtor: r.cafe ? r.cafe.produtor : null,
+      regiao: val('regiao'), variedade: val('variedade'), processo: val('processo'), torra: val('torra'),
+      pontuacao_sca: r.cafe ? r.cafe.pontuacao_sca : null,
+      notas: String(f.get('notas') || '').split(',').map(function (n) { return n.trim().toLowerCase(); }).filter(Boolean).slice(0, 5),
+      origem: r.origem === 'foto' ? 'foto' : 'manual'
+    };
+    estado.retorno = r.origem === 'foto' ? { resumo: r.resumo, dica: r.dica, metodo: estado.metodo } : null;
+    guardar();
+    location.hash = '#/registrar';
   });
 
   window.addEventListener('hashchange', function () { render(false); });

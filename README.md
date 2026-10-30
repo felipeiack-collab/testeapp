@@ -19,6 +19,20 @@
 - Cada ajuste tem um produto de parceiro relacionado (preço e link ainda a preencher: procure `[PREÇO]` e `data-acao="loja"` em `js/app.js`).
 - "Salvar e lembrar amanhã" guarda o registro no navegador e atualiza a tela de Início.
 
+## Leitura do rótulo por foto
+
+Na tela Registrar, "Fotografar pacote" abre a câmera do celular. A foto é reduzida no navegador e enviada para `api/identificar.js`, uma função da Vercel que pede a um modelo de IA da Claude API para ler o rótulo. A pessoa confere e corrige os dados na tela **Confira os dados** (`#/confirmar`) antes de usar.
+
+Variáveis de ambiente na Vercel:
+
+| Variável | Obrigatória | Para quê |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | Sim | Chave da Claude API. Sem ela, o app cai no preenchimento manual. |
+| `CLAUDE_MODEL` | Não | Modelo usado (padrão: `claude-haiku-5-5`). |
+| `LIMITE_FOTOS_HORA` | Não | Fotos por hora por IP (padrão: 20). |
+
+Depois de criar ou mudar uma variável, faça um novo deploy. O limite por IP é uma proteção básica; o teto de gastos no Claude Console é o que controla o custo de verdade.
+
 ## Rodar localmente
 
 Qualquer servidor estático serve, por exemplo:

@@ -175,4 +175,23 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .aviso.visivel { opacity: 1; transform: none; }
 
+/* Foto e formulário */
+.pacote { overflow: hidden; }
+.pacote img { width: 100%; height: 100%; object-fit: cover; }
+.girando { width: 22px; height: 22px; border-radius: 999px; border: 2px solid var(--linha-forte); border-top-color: var(--bronze); animation: girar .8s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .girando { animation-duration: 2.4s; } }
+.acoes-cafe { display: flex; gap: 20px; margin-top: -10px; }
+.link { background: none; border: 0; padding: 10px 0; min-height: 44px; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--bronze); text-transform: uppercase; }
+.foto-lida { width: 84px; height: 108px; flex: none; object-fit: cover; border-radius: 12px; border: 1px solid var(--linha); }
+.campo-form { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.campo-form input, .campo-form select {
+  width: 100%; min-height: 48px; padding: 0 14px; border-radius: 12px;
+  background: var(--grao); color: var(--leite); border: 1px solid var(--linha-forte);
+  font: 500 15px var(--sans);
+}
+.campo-form input::placeholder { color: var(--apagado); }
+.campo-form input:focus, .campo-form select:focus { outline: none; border-color: var(--bronze); }
+.campo-form select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--texto-3) 50%), linear-gradient(135deg, var(--texto-3) 50%, transparent 50%); background-position: calc(100% - 20px) 21px, calc(100% - 15px) 21px; background-size: 5px 5px; background-repeat: no-repeat; }
+
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
