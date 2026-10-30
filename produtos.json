@@ -1,0 +1,65 @@
+{
+  "_como_usar": "Cole o link de afiliado em 'link' (começando com https://). Em 'preco', coloque só o número, com ponto nos centavos (ex.: 89.90), ou deixe null para não mostrar preço. Em 'loja', o nome da loja (ex.: Mercado Livre). Produto sem link aparece como 'Em breve'. Não mude os nomes entre aspas antes dos dois-pontos de cada produto (ex.: \"termometro\"): o app usa esses nomes.",
+  "produtos": {
+    "termometro": {
+      "nome": "Termômetro culinário digital",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "moedor": {
+      "nome": "Moedor manual com regulagem",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "balanca": {
+      "nome": "Balança com timer para café",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "chaleira": {
+      "nome": "Chaleira com bico de ganso",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "pote": {
+      "nome": "Pote hermético com válvula",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "coador-pano": {
+      "nome": "Coador de pano",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "jarra": {
+      "nome": "Jarra graduada",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "prensa": {
+      "nome": "Prensa francesa 350 ml",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "cafe-torra-media": {
+      "nome": "Café especial torra média",
+      "preco": null,
+      "loja": null,
+      "link": null
+    },
+    "cafe-natural-sul-minas": {
+      "nome": "Café especial natural do Sul de Minas",
+      "preco": null,
+      "loja": null,
+      "link": null
+    }
+  }
+}

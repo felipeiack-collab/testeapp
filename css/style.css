@@ -135,6 +135,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .produto .info b { font-size: 13px; font-weight: 600; }
 .produto .preco { font-size: 12px; color: var(--bronze); }
 .produto a { flex: none; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--bronze); color: var(--bronze); display: flex; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; }
+.produto .em-breve { flex: none; padding: 0 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--texto-3); text-transform: uppercase; }
 .receita { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .receita div { display: flex; flex-direction: column; }
 .receita small { font-size: 10px; letter-spacing: 1px; color: var(--texto-3); text-transform: uppercase; }

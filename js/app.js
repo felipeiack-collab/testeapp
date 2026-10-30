@@ -18,9 +18,9 @@
       texto: 'A água tirou mais do pó do que devia. Dá para corrigir com o que você já tem.',
       receita: ['15 g', '250', '92°', '3 min'], rotTemp: '+30 s',
       dicas: [
-        { t: 'Água um pouco menos quente', d: 'Desligue quando ferver e espere 30 segundos.', p: 'Termômetro culinário digital' },
-        { t: 'Moagem mais grossa', d: 'Abra um ou dois cliques no moedor. Pó de mercado: use um pouco menos.', p: 'Moedor manual com regulagem' },
-        { t: 'Menos tempo de contato', d: 'Despeje em três etapas, sem deixar o pó encharcado.', p: 'Balança com timer para café' }
+        { t: 'Água um pouco menos quente', d: 'Desligue quando ferver e espere 30 segundos.', p: 'termometro' },
+        { t: 'Moagem mais grossa', d: 'Abra um ou dois cliques no moedor. Pó de mercado: use um pouco menos.', p: 'moedor' },
+        { t: 'Menos tempo de contato', d: 'Despeje em três etapas, sem deixar o pó encharcado.', p: 'balanca' }
       ]
     },
     {
@@ -29,9 +29,9 @@
       texto: 'A água não teve tempo ou calor suficiente para tirar a doçura do pó.',
       receita: ['15 g', '250', '96°', '4 min'], rotTemp: 'logo após ferver',
       dicas: [
-        { t: 'Água mais quente', d: 'Use a água logo depois de ferver, sem esperar.', p: 'Chaleira com bico de ganso' },
-        { t: 'Moagem mais fina', d: 'Feche um ou dois cliques no moedor.', p: 'Moedor manual com regulagem' },
-        { t: 'Despeje mais devagar', d: 'Molhe o pó, espere 30 segundos e siga em fio fino.', p: 'Balança com timer para café' }
+        { t: 'Água mais quente', d: 'Use a água logo depois de ferver, sem esperar.', p: 'chaleira' },
+        { t: 'Moagem mais fina', d: 'Feche um ou dois cliques no moedor.', p: 'moedor' },
+        { t: 'Despeje mais devagar', d: 'Molhe o pó, espere 30 segundos e siga em fio fino.', p: 'balanca' }
       ]
     },
     {
@@ -40,9 +40,9 @@
       texto: 'A proporção ficou com água demais para o pó que você usou.',
       receita: ['18 g', '250', '94°', '3,5 min'], rotTemp: 'ferveu +15 s',
       dicas: [
-        { t: 'Mais pó na mesma água', d: 'Comece com uma colher de sopa a mais.', p: 'Balança com timer para café' },
-        { t: 'Moagem um pouco mais fina', d: 'Pó mais fino libera sabor mais rápido.', p: 'Moedor manual com regulagem' },
-        { t: 'Guarde o pó bem fechado', d: 'Café aberto perde aroma em poucos dias.', p: 'Pote hermético com válvula' }
+        { t: 'Mais pó na mesma água', d: 'Comece com uma colher de sopa a mais.', p: 'balanca' },
+        { t: 'Moagem um pouco mais fina', d: 'Pó mais fino libera sabor mais rápido.', p: 'moedor' },
+        { t: 'Guarde o pó bem fechado', d: 'Café aberto perde aroma em poucos dias.', p: 'pote' }
       ]
     },
     {
@@ -51,9 +51,9 @@
       texto: 'Parte do pó extraiu demais e parte de menos. Isso deixa a boca seca.',
       receita: ['15 g', '250', '93°', '3 min'], rotTemp: 'ferveu +20 s',
       dicas: [
-        { t: 'Molhe todo o pó primeiro', d: 'Um pouco de água em círculos, espere 30 segundos e continue.', p: 'Chaleira com bico de ganso' },
-        { t: 'Moagem mais uniforme', d: 'Moedor de lâmina deixa pedaços desiguais; prefira mó.', p: 'Moedor manual com regulagem' },
-        { t: 'Não esprema o coador', d: 'Deixe escorrer sozinho até o fim.', p: 'Coador de pano novo' }
+        { t: 'Molhe todo o pó primeiro', d: 'Um pouco de água em círculos, espere 30 segundos e continue.', p: 'chaleira' },
+        { t: 'Moagem mais uniforme', d: 'Moedor de lâmina deixa pedaços desiguais; prefira mó.', p: 'moedor' },
+        { t: 'Não esprema o coador', d: 'Deixe escorrer sozinho até o fim.', p: 'coador-pano' }
       ]
     },
     {
@@ -62,9 +62,9 @@
       texto: 'Pouca água para muito pó. Fácil de acertar na próxima.',
       receita: ['13 g', '250', '93°', '3 min'], rotTemp: 'ferveu +20 s',
       dicas: [
-        { t: 'Menos pó', d: 'Tire uma colher de sopa e compare.', p: 'Balança com timer para café' },
-        { t: 'Complete com água quente', d: 'Se já passou, dilua na xícara aos poucos.', p: 'Jarra graduada' },
-        { t: 'Experimente uma torra média', d: 'Torras escuras pesam mais na boca.', p: 'Café especial torra média' }
+        { t: 'Menos pó', d: 'Tire uma colher de sopa e compare.', p: 'balanca' },
+        { t: 'Complete com água quente', d: 'Se já passou, dilua na xícara aos poucos.', p: 'jarra' },
+        { t: 'Experimente uma torra média', d: 'Torras escuras pesam mais na boca.', p: 'cafe-torra-media' }
       ]
     },
     {
@@ -73,9 +73,9 @@
       texto: 'Guarde essa receita. Ela é o seu ponto de partida para explorar.',
       receita: ['15 g', '250', '93°', '3 min'], rotTemp: 'ferveu +20 s',
       dicas: [
-        { t: 'Repita a receita', d: 'Faça igual amanhã para confirmar.', p: 'Balança com timer para café' },
-        { t: 'Troque só o café', d: 'Mesmo método, outro grão: compare as diferenças.', p: 'Café especial natural do Sul de Minas' },
-        { t: 'Teste outro método', d: 'O mesmo café na prensa ou na italiana muda tudo.', p: 'Prensa francesa 350 ml' }
+        { t: 'Repita a receita', d: 'Faça igual amanhã para confirmar.', p: 'balanca' },
+        { t: 'Troque só o café', d: 'Mesmo método, outro grão: compare as diferenças.', p: 'cafe-natural-sul-minas' },
+        { t: 'Teste outro método', d: 'O mesmo café na prensa ou na italiana muda tudo.', p: 'prensa' }
       ]
     }
   ];
@@ -171,6 +171,39 @@
       '<div class="acoes-cafe"><button type="button" class="link" data-acao="foto">Fotografar pacote</button><button type="button" class="link" data-acao="manual">Preencher à mão</button></div>';
   }
 
+  // ---------- Produtos (vêm de produtos.json) ----------
+  var produtos = {};
+
+  function produto(id) {
+    var p = produtos[id] || {};
+    var link = typeof p.link === 'string' && /^https:\/\//i.test(p.link.trim()) ? p.link.trim() : null;
+    var preco = typeof p.preco === 'number' && p.preco > 0
+      ? p.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : null;
+    return { nome: p.nome || id, loja: p.loja || null, link: link, preco: preco };
+  }
+
+  function cartaoProduto(id) {
+    var p = produto(id);
+    var origem = p.link ? 'Afiliado' + (p.loja ? ' · ' + esc(p.loja) : '') : 'Sugestão';
+    var acao = p.link
+      ? '<a href="' + esc(p.link) + '" target="_blank" rel="sponsored noopener noreferrer">Ver na loja<span class="sr"> (abre em nova aba)</span></a>'
+      : '<span class="em-breve">Em breve</span>';
+    return '<div class="produto"><div class="img">' + ic.sacola + '</div><div class="info">' +
+      '<span class="rotulo" style="font-size:10px;letter-spacing:1.5px">' + origem + '</span><b>' + esc(p.nome) + '</b>' +
+      (p.preco ? '<span class="preco">' + p.preco + '</span>' : '') + '</div>' + acao + '</div>';
+  }
+
+  function degrau() {
+    var p = produto('cafe-natural-sul-minas');
+    var detalhe = 'Mais doçura, chocolate ao leite' + (p.preco ? ' · ' + p.preco : '');
+    var miolo = '<span class="rotulo bronze" style="font-size:10px">Agora</span><span class="serif" style="font-size:24px;line-height:1.1">' + esc(p.nome) + '</span>' +
+      '<span style="font-size:13px;color:var(--texto-3)">' + detalhe + '</span>' +
+      (p.link ? '<span class="rotulo" style="font-size:10px;color:var(--bronze)">Ver na loja · link de afiliado</span>' : '');
+    return p.link
+      ? '<a class="cartao destaque" style="gap:6px" href="' + esc(p.link) + '" target="_blank" rel="sponsored noopener noreferrer">' + miolo + '</a>'
+      : '<div class="cartao destaque" style="gap:6px">' + miolo + '</div>';
+  }
+
   function campo(id, rotulo, valor, dica) {
     return '<label class="campo-form" for="f-' + id + '"><span class="rotulo">' + rotulo + '</span>' +
       '<input id="f-' + id + '" name="' + id + '" value="' + esc(valor) + '" placeholder="' + esc(dica || '') + '" autocomplete="off"></label>';
@@ -244,7 +277,7 @@
         var aberta = estado.dica === i;
         return '<div class="dica' + (aberta ? ' aberta' : '') + '">' +
           '<button type="button" data-acao="dica" data-id="' + i + '" aria-expanded="' + aberta + '"><span class="n">' + (i + 1) + '</span><span><strong>' + d.t + '</strong><span class="corpo">' + d.d + '</span></span></button>' +
-          (aberta ? '<div class="produto"><div class="img">' + ic.sacola + '</div><div class="info"><span class="rotulo" style="font-size:10px;letter-spacing:1.5px">Parceiro</span><b>' + d.p + '</b><span class="preco">[PREÇO]</span></div><a href="#" data-acao="loja">Ver na loja</a></div>' : '') +
+          (aberta ? cartaoProduto(d.p) : '') +
           '</div>';
       }).join('');
       var r = s.receita;
@@ -271,7 +304,7 @@
         }).join('') + '</div>' +
         '<div class="campo"><span class="rotulo">Seu próximo degrau</span>' +
         '<div class="degraus"><div><small>FEITO</small>Tradicional de mercado</div><div><small>FEITO</small>Gourmet torra média</div></div>' +
-        '<div class="cartao destaque" style="gap:6px"><span class="rotulo bronze" style="font-size:10px">Agora</span><span class="serif" style="font-size:24px;line-height:1.1">Especial natural do Sul de Minas</span><span style="font-size:13px;color:var(--texto-3)">Mais doçura, chocolate ao leite · [PREÇO]</span></div></div>' +
+        degrau() + '</div>' +
         '<div class="chips"><span class="tag">Chocolate · 5×</span><span class="tag">Caramelo · 3×</span><span class="tag apagada">Frutado · não curtiu</span></div>' +
         '</div>' + nav('paladar') + '</section>';
     },
@@ -446,4 +479,9 @@
 
   window.addEventListener('hashchange', function () { render(false); });
   render(false);
+
+  fetch('produtos.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.json() : {}; })
+    .then(function (d) { produtos = (d && d.produtos) || {}; render(true); })
+    .catch(function () { /* sem produtos: os cartões aparecem como "Em breve" */ });
 })();
