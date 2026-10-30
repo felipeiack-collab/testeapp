@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Identidade visual · Ponto</title>
+  <meta name="theme-color" content="#0F0D0B">
+  <link rel="icon" href="img/icone.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --torra:#0F0D0B; --grao:#1A1714; --linha:#2E2924; --linha-forte:#3A332C; --leite:#EFE7DA; --texto-2:#B9AFA2; --texto-3:#9C9284; --bronze:#B8926A; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--torra); color: var(--leite); font-family: 'Manrope', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    a { color: var(--bronze); }
+    .pagina { max-width: 1040px; margin: 0 auto; padding: 56px 24px 80px; display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 56px; }
+    @media (max-width: 820px) { .pagina { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-top: 32px; } }
+    .rotulo { font-size: 11px; letter-spacing: 2.5px; color: var(--texto-3); text-transform: uppercase; }
+    .coluna { display: flex; flex-direction: column; gap: 28px; }
+    .icone-grande { width: 100%; max-width: 260px; height: auto; }
+    .tamanhos { display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; }
+    .tamanhos figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .tamanhos figcaption { font-size: 10px; letter-spacing: 1px; color: var(--texto-3); }
+    .claro { width: 80px; height: 80px; border-radius: 16px; background: var(--leite); display: flex; align-items: center; justify-content: center; }
+    p { margin: 0; font-size: 14px; line-height: 1.6; color: var(--texto-2); }
+    .logo { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: clamp(80px, 14vw, 128px); line-height: .9; letter-spacing: -2px; }
+    .logo span { color: var(--bronze); }
+    .assinatura { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 26px; color: var(--texto-2); }
+    .paleta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 480px) { .paleta { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .cor { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 600; }
+    .cor div { height: 64px; border-radius: 12px; border: 1px solid var(--linha-forte); }
+    .cor small { font-size: 11px; font-weight: 400; color: var(--texto-3); }
+    .tipos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; border-top: 1px solid var(--linha); padding-top: 22px; }
+    @media (max-width: 480px) { .tipos { grid-template-columns: minmax(0, 1fr); } }
+    .tipos > div { display: flex; flex-direction: column; gap: 6px; }
+    .t-serif { font-family: 'Cormorant Garamond', serif; font-size: 30px; line-height: 1.05; }
+    .pilula { align-self: flex-start; padding: 8px 16px; border-radius: 999px; background: var(--bronze); color: var(--torra); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; }
+    .voltar { grid-column: 1 / -1; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main class="pagina">
+    <section class="coluna" aria-labelledby="h-icone">
+      <h2 class="rotulo" id="h-icone" style="margin:0">Ícone do app</h2>
+      <img class="icone-grande" src="img/icone.svg" alt="Ícone Ponto: um anel claro com um ponto bronze no centro" width="260" height="260">
+      <div class="tamanhos">
+        <figure><img src="img/icone.svg" alt="" width="80" height="80"><figcaption>LOJA</figcaption></figure>
+        <figure><img src="img/icone.svg" alt="" width="56" height="56"><figcaption>TELA</figcaption></figure>
+        <figure><img src="img/icone.svg" alt="" width="32" height="32"><figcaption>NOTIFICAÇÃO</figcaption></figure>
+        <figure><div class="claro"><img src="img/icone.svg" alt="" width="56" height="56"></div><figcaption>FUNDO CLARO</figcaption></figure>
+      </div>
+      <p>A xícara vista de cima e o ponto certo bem no centro. É o alvo que o app ajuda a acertar a cada preparo.</p>
+    </section>
+
+    <section class="coluna" style="gap:34px" aria-labelledby="h-logo">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <h2 class="rotulo" id="h-logo" style="margin:0">Logotipo</h2>
+        <h1 class="logo" style="margin:0">ponto<span>.</span></h1>
+        <span class="assinatura">Encontre o seu ponto.</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <h2 class="rotulo" style="margin:0">Paleta</h2>
+        <div class="paleta">
+          <div class="cor"><div style="background:#0F0D0B"></div>Torra<small>#0F0D0B</small></div>
+          <div class="cor"><div style="background:#1A1714"></div>Grão<small>#1A1714</small></div>
+          <div class="cor"><div style="background:#EFE7DA;border-color:#EFE7DA"></div>Leite<small>#EFE7DA</small></div>
+          <div class="cor"><div style="background:#B8926A;border-color:#B8926A"></div>Bronze<small>#B8926A</small></div>
+        </div>
+      </div>
+
+      <div class="tipos">
+        <div><span class="rotulo">Títulos</span><span class="t-serif">O café passou do ponto.</span><span style="font-size:11px;color:var(--texto-3)">Cormorant Garamond 500</span></div>
+        <div><span class="rotulo">Texto e interface</span><p>Desligue quando ferver e espere 30 segundos.</p><span class="pilula">REGISTRAR</span><span style="font-size:11px;color:var(--texto-3)">Manrope 400 / 600 / 700</span></div>
+      </div>
+    </section>
+
+    <a class="voltar" href="./">← Abrir o protótipo</a>
+  </main>
+</body>
+</html>

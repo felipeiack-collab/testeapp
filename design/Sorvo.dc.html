@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Identidade Sorvo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&amp;family=Manrope:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#F3E9DB}a:hover{color:#FFFFFF}
+</style>
+</helmet>
+<div style="width: 1040px; height: 720px; box-sizing: border-box; background: #1A110C; color: #F3E9DB; font-family: 'Manrope', system-ui, sans-serif; padding: 56px; display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 56px">
+
+<div style="display: flex; flex-direction: column; gap: 28px">
+<span style="font-size: 11px; letter-spacing: 2.5px; color: #A8988A">ÍCONE DO APP</span>
+<svg width="260" height="260" viewBox="0 0 100 100" role="img" aria-label="Ícone Sorvo: xícara vista de lado com a superfície do café e um fio de vapor em S"><rect width="100" height="100" rx="22" fill="#2A1B13"></rect><rect x="0.5" y="0.5" width="99" height="99" rx="21.5" fill="none" stroke="#3D2A1E"></rect><ellipse cx="50" cy="62" rx="27" ry="10" fill="none" stroke="#F3E9DB" stroke-width="2.4"></ellipse><ellipse cx="50" cy="63" rx="20" ry="5.5" fill="{{accent}}"></ellipse><path d="M54 48c-9-4 5-10-3-16s3-10 3-10" fill="none" stroke="#F3E9DB" stroke-width="2.4" stroke-linecap="round"></path></svg>
+<div style="display: flex; align-items: flex-end; gap: 20px">
+<sc-for list="{{tamanhos}}" as="t" hint-placeholder-count="3">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<svg width="{{t.px}}" height="{{t.px}}" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#2A1B13"></rect><ellipse cx="50" cy="62" rx="27" ry="10" fill="none" stroke="#F3E9DB" stroke-width="{{t.traco}}"></ellipse><ellipse cx="50" cy="63" rx="20" ry="5.5" fill="{{accent}}"></ellipse><path d="M54 48c-9-4 5-10-3-16s3-10 3-10" fill="none" stroke="#F3E9DB" stroke-width="{{t.traco}}" stroke-linecap="round"></path></svg>
+<span style="font-size: 10px; letter-spacing: 1px; color: #A8988A">{{t.label}}</span>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px">
+<div style="width: 80px; height: 80px; border-radius: 16px; background: #F3E9DB; display: flex; align-items: center; justify-content: center"><svg width="56" height="56" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#2A1B13"></rect><ellipse cx="50" cy="62" rx="27" ry="10" fill="none" stroke="#F3E9DB" stroke-width="3"></ellipse><ellipse cx="50" cy="63" rx="20" ry="5.5" fill="{{accent}}"></ellipse><path d="M54 48c-9-4 5-10-3-16s3-10 3-10" fill="none" stroke="#F3E9DB" stroke-width="3" stroke-linecap="round"></path></svg></div>
+<span style="font-size: 10px; letter-spacing: 1px; color: #A8988A">FUNDO CLARO</span>
+</div>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.6; color: #C7B7A6">A xícara com a crema à mostra e o vapor desenhando um S. O primeiro gole de quem está provando de verdade.</p>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 34px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 11px; letter-spacing: 2.5px; color: #A8988A">LOGOTIPO</span>
+<span style="font-family: 'Cormorant Garamond', serif; font-size: 128px; font-weight: 500; font-style: italic; line-height: 0.9; letter-spacing: -1px">Sorvo</span>
+<span style="font-family: 'Cormorant Garamond', serif; font-size: 26px; font-style: italic; color: #C7B7A6">Prove, entenda, repita.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span style="font-size: 11px; letter-spacing: 2.5px; color: #A8988A">PALETA</span>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 12px; background: #1A110C; border: 1px solid #4A3426"></div><span style="font-size: 12px; font-weight: 600">Espresso</span><span style="font-size: 11px; color: #A8988A">#1A110C</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 12px; background: #2A1B13; border: 1px solid #4A3426"></div><span style="font-size: 12px; font-weight: 600">Moca</span><span style="font-size: 11px; color: #A8988A">#2A1B13</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 12px; background: #F3E9DB"></div><span style="font-size: 12px; font-weight: 600">Nata</span><span style="font-size: 11px; color: #A8988A">#F3E9DB</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 12px; background: {{accent}}"></div><span style="font-size: 12px; font-weight: 600">Crema</span><span style="font-size: 11px; color: #A8988A">#D8A878</span></div>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; border-top: 1px solid #3D2A1E; padding-top: 22px">
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 11px; letter-spacing: 2px; color: #A8988A">TÍTULOS</span><span style="font-family: 'Cormorant Garamond', serif; font-size: 30px; font-style: italic; line-height: 1.05">Como foi o primeiro gole?</span><span style="font-size: 11px; color: #A8988A">Cormorant Garamond itálico 500</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 11px; letter-spacing: 2px; color: #A8988A">TEXTO E INTERFACE</span><span style="font-size: 14px; line-height: 1.5; color: #C7B7A6">Desligue quando ferver e espere 30 segundos.</span><span style="display: inline-flex; align-self: flex-start; padding: 8px 16px; border-radius: 999px; background: {{accent}}; color: #1A110C; font-size: 11px; font-weight: 700; letter-spacing: 1.5px">REGISTRAR</span></div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D8A878","options":["#D8A878","#C98F5E","#E2C59A"]},"$preview":{"width":1040,"height":720}}'>
+class Component extends DCLogic {
+renderVals() {
+return {
+accent: this.props.accent ?? '#D8A878',
+tamanhos: [
+{ px: 80, traco: 2.6, label: 'LOJA' },
+{ px: 56, traco: 3, label: 'TELA' },
+{ px: 32, traco: 4, label: 'NOTIFICAÇÃO' }
+]
+};
+}
+}
+</script>
+</body>
+</html>
