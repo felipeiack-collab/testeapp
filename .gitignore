@@ -1,0 +1,23 @@
+# Segredos e variáveis de ambiente locais (nunca enviar ao GitHub)
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel/
+
+# Dependências e builds
+node_modules/
+dist/
+build/
+
+# Supabase (arquivos locais da CLI)
+supabase/.temp/
+supabase/.branches/
+
+# Sistema e editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
