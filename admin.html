@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Leituras · Ponto</title>
+  <meta name="theme-color" content="#0F0D0B">
+  <link rel="icon" href="img/icone.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --torra:#0F0D0B; --grao:#1A1714; --linha:#2E2924; --linha-forte:#3A332C; --leite:#EFE7DA; --texto-2:#B9AFA2; --texto-3:#9C9284; --bronze:#B8926A; --erro:#E39A86; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--torra); color: var(--leite); font-family: 'Manrope', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+    main { max-width: 1200px; margin: 0 auto; padding: 40px 16px 80px; display: flex; flex-direction: column; gap: 28px; }
+    h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 40px; margin: 0; line-height: 1.05; }
+    .rotulo { font-size: 11px; letter-spacing: 2px; color: var(--texto-3); text-transform: uppercase; }
+    .bronze { color: var(--bronze); }
+    p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--texto-2); }
+    form { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    label { display: flex; flex-direction: column; gap: 8px; flex: 1 1 260px; }
+    input { min-height: 48px; padding: 0 14px; border-radius: 12px; background: var(--grao); color: var(--leite); border: 1px solid var(--linha-forte); font: 500 15px 'Manrope', sans-serif; }
+    input:focus { outline: none; border-color: var(--bronze); }
+    button { min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0; background: var(--bronze); color: var(--torra); font: 700 12px 'Manrope', sans-serif; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; }
+    button.contorno { background: transparent; color: var(--leite); border: 1px solid var(--linha-forte); }
+    button:disabled { opacity: .5; cursor: default; }
+    :focus-visible { outline: 2px solid var(--bronze); outline-offset: 2px; }
+    .msg { padding: 14px 16px; border-radius: 12px; border: 1px solid var(--linha); background: var(--grao); font-size: 14px; }
+    .msg.erro { border-color: var(--erro); color: var(--erro); }
+    .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+    .card { background: var(--grao); border: 1px solid var(--linha); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+    .num { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; line-height: 1; }
+    .card small { font-size: 12px; color: var(--texto-3); }
+    .campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .campo { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+    .campo .barra { height: 4px; background: var(--linha); border-radius: 999px; overflow: hidden; }
+    .campo .barra span { display: block; height: 100%; background: var(--bronze); }
+    .tabela { overflow-x: auto; border: 1px solid var(--linha); border-radius: 16px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 860px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+    th { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto-3); font-weight: 600; background: var(--grao); position: sticky; top: 0; }
+    td.fraco { color: var(--texto-3); }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--linha-forte); font-size: 11px; white-space: nowrap; }
+    .tag.ok { border-color: var(--bronze); color: var(--bronze); }
+    .tag.ruim { border-color: var(--erro); color: var(--erro); }
+    .acoes { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main>
+    <header style="display:flex;flex-direction:column;gap:8px">
+      <span class="rotulo bronze">Uso interno · Ponto</span>
+      <h1>Leituras de rótulo</h1>
+      <p>Registro anônimo das fotos analisadas: o que a IA leu e o que a pessoa corrigiu. As fotos não são guardadas.</p>
+    </header>
+
+    <form id="entrar" autocomplete="off">
+      <label for="senha"><span class="rotulo">Senha de administração (ADMIN_TOKEN)</span>
+        <input id="senha" type="password" required minlength="16" autocomplete="current-password">
+      </label>
+      <button type="submit">Ver registros</button>
+    </form>
+
+    <div id="mensagem" class="msg" role="status" hidden></div>
+
+    <section id="painel" hidden style="display:flex;flex-direction:column;gap:28px">
+      <div class="acoes">
+        <span class="rotulo" id="gerado"></span>
+        <button type="button" class="contorno" id="atualizar">Atualizar</button>
+        <button type="button" class="contorno" id="csv">Baixar CSV</button>
+        <button type="button" class="contorno" id="sair">Sair</button>
+      </div>
+      <div class="grade" id="totais"></div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span class="rotulo">Acerto da IA por campo (entre as leituras confirmadas)</span>
+        <div class="campos" id="campos"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span class="rotulo">Últimas tentativas</span>
+        <div class="tabela"><table>
+          <thead><tr><th>Quando</th><th>Resultado</th><th>Método</th><th>Confiança</th><th>Lido pela IA</th><th>Confirmado</th><th>Campos corrigidos</th></tr></thead>
+          <tbody id="linhas"></tbody>
+        </table></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    'use strict';
+    var CHAVE = 'ponto:admin';
+    var NOMES = { nome: 'Nome', torrefacao: 'Torrefação', produtor: 'Produtor', regiao: 'Região', variedade: 'Variedade', processo: 'Processo', torra: 'Torra', notas: 'Notas' };
+    var RESULTADOS = { ok: 'Lido', nao_cafe: 'Não era café', erro_formato: 'Resposta inválida', erro_api: 'Erro na API', erro_tempo: 'Demorou demais', erro_falha: 'Falha' };
+    var METODOS = { pano: 'Pano', papel: 'Papel', italiana: 'Italiana', prensa: 'Prensa', eletrica: 'Elétrica' };
+    var dados = null;
+    var $ = function (id) { return document.getElementById(id); };
+
+    function esc(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function lerSenha() { try { return sessionStorage.getItem(CHAVE) || ''; } catch (e) { return ''; } }
+    function salvarSenha(v) { try { if (v) sessionStorage.setItem(CHAVE, v); else sessionStorage.removeItem(CHAVE); } catch (e) {} }
+    function mensagem(t, erro) { var m = $('mensagem'); m.hidden = !t; m.textContent = t || ''; m.className = 'msg' + (erro ? ' erro' : ''); }
+    function quando(iso) { var d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+    function resumoCafe(c) {
+      if (!c) return '';
+      return [c.nome || c.torrefacao, c.regiao, c.torra ? 'torra ' + c.torra : null, c.processo].filter(Boolean).join(' · ');
+    }
+
+    function carregar(senha) {
+      mensagem('Carregando…');
+      $('entrar').querySelector('button').disabled = true;
+      return fetch('/api/leituras', { headers: { Authorization: 'Bearer ' + senha }, cache: 'no-store' })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, status: r.status, d: d }; }); })
+        .then(function (r) {
+          if (!r.ok) {
+            if (r.status === 401) salvarSenha('');
+            throw new Error(r.d.mensagem || 'Não foi possível carregar (erro ' + r.status + ').');
+          }
+          salvarSenha(senha);
+          dados = r.d;
+          mostrar();
+          mensagem('');
+          $('entrar').hidden = true;
+          $('painel').hidden = false;
+        })
+        .catch(function (e) { mensagem(e.message || 'Sem conexão.', true); })
+        .then(function () { $('entrar').querySelector('button').disabled = false; });
+    }
+
+    function card(num, rotulo, nota) {
+      return '<div class="card"><span class="num">' + esc(num) + '</span><span class="rotulo">' + esc(rotulo) + '</span>' + (nota ? '<small>' + esc(nota) + '</small>' : '') + '</div>';
+    }
+
+    function mostrar() {
+      var r = dados.resumo;
+      var pr = r.por_resultado || {};
+      var falhas = r.tentativas - (pr.ok || 0) - (pr.nao_cafe || 0);
+      var pct = r.confirmadas ? Math.round((r.confirmadas_sem_correcao / r.confirmadas) * 100) + '%' : '—';
+      $('gerado').textContent = 'Atualizado ' + quando(dados.gerado_em) + (r.tentativas >= dados.limite ? ' · mostrando as ' + dados.limite + ' mais recentes' : '');
+      $('totais').innerHTML =
+        card(r.tentativas, 'Fotos enviadas') +
+        card(r.lidas_com_sucesso, 'Lidas com sucesso', (pr.nao_cafe || 0) + ((pr.nao_cafe || 0) === 1 ? ' não era café' : ' não eram café') + ' · ' + falhas + ' com erro') +
+        card(r.confirmadas, 'Confirmadas pela pessoa', r.lidas_com_sucesso ? Math.round((r.confirmadas / r.lidas_com_sucesso) * 100) + '% das lidas' : '') +
+        card(pct, 'Sem nenhuma correção', r.confirmadas_sem_correcao + ' de ' + r.confirmadas);
+      var campos = r.acerto_por_campo_pct || {};
+      $('campos').innerHTML = Object.keys(NOMES).map(function (k) {
+        var v = campos[k];
+        return '<div class="campo"><div style="display:flex;justify-content:space-between"><span>' + NOMES[k] + '</span><span style="color:var(--texto-3)">' + (v == null ? '—' : v + '%') + '</span></div>' +
+          '<div class="barra"><span style="width:' + (v || 0) + '%"></span></div></div>';
+      }).join('');
+      $('linhas').innerHTML = dados.itens.length ? dados.itens.map(function (i) {
+        var classe = i.resultado === 'ok' ? 'ok' : (i.resultado === 'nao_cafe' ? '' : 'ruim');
+        var conf = i.confirmada ? (i.sem_correcao ? '<span class="tag ok">Sem correção</span>' : '<span class="tag">Corrigido</span>') : '<span class="fraco">—</span>';
+        return '<tr><td>' + esc(quando(i.quando)) + '</td>' +
+          '<td><span class="tag ' + classe + '">' + esc(RESULTADOS[i.resultado] || i.resultado) + '</span></td>' +
+          '<td>' + esc(METODOS[i.metodo] || i.metodo || '—') + '</td>' +
+          '<td>' + esc(i.confianca || '—') + '</td>' +
+          '<td>' + esc(resumoCafe(i.lida)) + '</td>' +
+          '<td>' + conf + (i.final && !i.sem_correcao ? '<div class="fraco" style="margin-top:4px">' + esc(resumoCafe(i.final)) + '</div>' : '') + '</td>' +
+          '<td class="fraco">' + esc((i.campos_alterados || []).map(function (c) { return NOMES[c] || c; }).join(', ') || '—') + '</td></tr>';
+      }).join('') : '<tr><td colspan="7" class="fraco">Nenhuma leitura registrada ainda. Tire uma foto no app para aparecer aqui.</td></tr>';
+    }
+
+    function csv() {
+      var campos = ['nome', 'torrefacao', 'regiao', 'variedade', 'processo', 'torra', 'notas'];
+      var cab = ['quando', 'resultado', 'metodo', 'confianca', 'confirmada', 'sem_correcao', 'campos_corrigidos']
+        .concat(campos.map(function (c) { return 'lido_' + c; }), campos.map(function (c) { return 'final_' + c; }));
+      var cel = function (v) {
+        if (Array.isArray(v)) v = v.join('; ');
+        if (v == null) v = '';
+        v = String(v);
+        if (/^[=+\-@]/.test(v)) v = "'" + v; // evita fórmulas ao abrir no Excel
+        return '"' + v.replace(/"/g, '""') + '"';
+      };
+      var linhas = dados.itens.map(function (i) {
+        var lida = i.lida || {}, fin = i.final || {};
+        return [i.quando, i.resultado, i.metodo, i.confianca, i.confirmada, i.sem_correcao, i.campos_alterados]
+          .concat(campos.map(function (c) { return lida[c]; }), campos.map(function (c) { return fin[c]; }))
+          .map(cel).join(',');
+      });
+      var blob = new Blob(['﻿' + [cab.join(',')].concat(linhas).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ponto-leituras-' + new Date().toISOString().slice(0, 10) + '.csv';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    }
+
+    $('entrar').addEventListener('submit', function (e) { e.preventDefault(); carregar($('senha').value.trim()); });
+    $('atualizar').addEventListener('click', function () { carregar(lerSenha()); });
+    $('csv').addEventListener('click', function () { if (dados) csv(); });
+    $('sair').addEventListener('click', function () {
+      salvarSenha(''); dados = null; $('senha').value = '';
+      $('painel').hidden = true; $('entrar').hidden = false; mensagem('');
+    });
+
+    var salva = lerSenha();
+    if (salva) carregar(salva);
+  })();
+  </script>
+</body>
+</html>

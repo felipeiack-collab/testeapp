@@ -176,6 +176,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .aviso.visivel { opacity: 1; transform: none; }
 
+/* Histórico */
+.registros { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid var(--linha); }
+.registro { display: flex; flex-direction: column; gap: 4px; padding: 16px 0; border-bottom: 1px solid var(--linha); }
+.mini-pontos { display: flex; gap: 4px; flex: none; }
+.mini-pontos .pt { width: 8px; height: 8px; border-radius: 999px; border: 1px solid var(--bronze); }
+.mini-pontos .pt.cheio { background: var(--bronze); }
+
 /* Foto e formulário */
 .pacote { overflow: hidden; }
 .pacote img { width: 100%; height: 100%; object-fit: cover; }

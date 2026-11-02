@@ -43,7 +43,19 @@ Variáveis de ambiente na Vercel:
 | `CLAUDE_MODEL` | Não | Modelo usado (padrão: `claude-haiku-5-5`). |
 | `LIMITE_FOTOS_HORA` | Não | Fotos por hora por IP (padrão: 20). |
 
-Depois de criar ou mudar uma variável, faça um novo deploy. O limite por IP é uma proteção básica; o teto de gastos no Claude Console é o que controla o custo de verdade.
+| `ADMIN_TOKEN` | Para a consulta | Senha da página `admin.html` (16 caracteres ou mais). |
+
+Depois de criar ou mudar uma variável, faça um novo deploy.
+
+## Histórico e registro das leituras
+
+- **Minhas xícaras** (`#/historico`): cada "Salvar e lembrar amanhã" vira um registro guardado só no navegador da pessoa (até 200). Dá para apagar tudo pela própria tela.
+- **Registro anônimo das leituras**: cada foto analisada gera um registro com o que a IA leu e, se a pessoa confirmar, o que ela corrigiu. **Não guarda a foto, o IP nem dados pessoais.** Fica num Blob **privado** da Vercel.
+  - `api/identificar.js` grava o desfecho de cada tentativa (lido, não era café, erro).
+  - `api/confirmar-leitura.js` grava a comparação campo a campo.
+  - `api/leituras.js` devolve o resumo; só responde com o cabeçalho `Authorization: Bearer <ADMIN_TOKEN>`.
+  - `admin.html` é a página de consulta: totais, acerto por campo, últimas 500 tentativas e exportação em CSV.
+- Para ativar: na Vercel, **Storage → Create → Blob**, acesso **Private**, conectar ao projeto e criar a variável `ADMIN_TOKEN`. Depois, um novo deploy. Sem Blob conectado, o app funciona igual e simplesmente não registra nada. O limite por IP é uma proteção básica; o teto de gastos no Claude Console é o que controla o custo de verdade.
 
 ## Rodar localmente
 

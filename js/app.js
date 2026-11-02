@@ -87,10 +87,12 @@
   var PROCESSOS = ['natural', 'lavado', 'cereja descascado', 'honey', 'fermentado'];
   var TORRAS = ['clara', 'média', 'média-escura', 'escura'];
 
-  var padrao = { metodo: 'pano', sintoma: 'amargo', nota: 3, dica: 0, salvo: { metodo: 'pano', sintoma: 'amargo' }, xicaras: 7, cafe: CAFE_EXEMPLO, retorno: null };
+  var padrao = { metodo: 'pano', sintoma: 'amargo', nota: 3, dica: 0, salvo: { metodo: 'pano', sintoma: 'amargo' }, xicaras: 7, cafe: CAFE_EXEMPLO, retorno: null, historico: [] };
+  var MAX_HISTORICO = 200;
   var estado = carregar();
   // Só em memória (não vai para o armazenamento do navegador)
-  var sessao = { lendo: false, foto: null, rascunho: null };
+  var sessao = { lendo: false, foto: null, rascunho: null, apagar: false };
+  if (!Array.isArray(estado.historico)) estado.historico = [];
 
   function esc(v) {
     return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
@@ -149,6 +151,17 @@
     var meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
     return dias[d.getDay()] + ' · ' + d.getDate() + ' ' + meses[d.getMonth()];
   }
+
+  function dataCurta(iso) {
+    var d = new Date(iso);
+    if (isNaN(d)) return '';
+    var dias = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+    var meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+    var hh = ('0' + d.getHours()).slice(-2), mm = ('0' + d.getMinutes()).slice(-2);
+    return dias[d.getDay()] + ' · ' + d.getDate() + ' ' + meses[d.getMonth()] + ' · ' + hh + ':' + mm;
+  }
+  function rotuloRegistros(n) { return n === 1 ? '1 registro' : n + ' registros'; }
+  function nomeCafe(c) { return (c && (c.nome || c.torrefacao)) || 'Café sem nome'; }
 
   function linhaCafe(c) {
     return [c.variedade, c.torra ? 'torra ' + c.torra : null, c.processo, c.regiao].filter(Boolean).map(esc).join(' · ');
@@ -241,6 +254,8 @@
         '<a class="btn" href="#/registrar">Registrar o café de hoje</a>' +
         '<a class="cartao" href="#/paladar"><div class="linha-topo"><span class="serif" style="font-size:22px">Seu paladar</span><span class="rotulo">' + estado.xicaras + ' xícaras</span></div>' +
         '<p class="corpo">Encorpado e doce, com pouca acidez. Notas de chocolate e caramelo.</p></a>' +
+        '<a class="cartao" href="#/historico"><div class="linha-topo"><span class="serif" style="font-size:22px">Minhas xícaras</span><span class="rotulo">' + rotuloRegistros(estado.historico.length) + '</span></div>' +
+        '<p class="corpo">' + (estado.historico.length ? 'Última: ' + esc(nomeCafe(estado.historico[0].cafe)) + ', ' + dataCurta(estado.historico[0].quando).toLowerCase() + '.' : 'Cada café que você registrar fica guardado aqui, neste aparelho.') + '</p></a>' +
         '<div class="cartao"><div class="linha-topo"><span class="rotulo bronze">Trilha · Semana 1</span><span class="rotulo">3 / 5</span></div>' +
         '<span class="serif" style="font-size:22px">A proporção certa</span>' +
         '<p class="corpo" style="font-size:13px">Desafio: o mesmo café com 12 g e com 18 g. Qual você prefere?</p>' +
@@ -306,6 +321,7 @@
         '<div class="degraus"><div><small>FEITO</small>Tradicional de mercado</div><div><small>FEITO</small>Gourmet torra média</div></div>' +
         degrau() + '</div>' +
         '<div class="chips"><span class="tag">Chocolate · 5×</span><span class="tag">Caramelo · 3×</span><span class="tag apagada">Frutado · não curtiu</span></div>' +
+        '<a class="btn contorno" href="#/historico">Ver minhas xícaras</a>' +
         '</div>' + nav('paladar') + '</section>';
     },
 
@@ -333,8 +349,39 @@
         '<div class="grade-2" style="gap:12px">' + seletor('processo', 'Processo', c.processo, PROCESSOS) + seletor('torra', 'Torra', c.torra, TORRAS) + '</div>' +
         campo('notas', 'Notas do rótulo', (c.notas || []).join(', '), 'Ex.: chocolate, caramelo') +
         '<button type="submit" class="btn" style="margin-top:8px">Usar este café</button>' +
+        (porFoto && r.registrado ? '<p class="nota-metodo">Para melhorar a leitura, guardamos de forma anônima o que foi lido e o que você corrigiu. A foto não é guardada.</p>' : '') +
         '<button type="button" class="btn contorno" data-acao="foto">' + (porFoto ? 'Tirar outra foto' : 'Fotografar o pacote') + '</button>' +
         '</form><div class="aviso" id="aviso" role="status"></div></section>';
+    },
+
+    historico: function () {
+      var lista = estado.historico;
+      var itens = lista.map(function (h) {
+        var m = achar(METODOS, h.metodo), s = achar(SINTOMAS, h.sintoma);
+        var pontos = [1, 2, 3, 4, 5].map(function (n) {
+          return '<span class="pt' + (n <= h.nota ? ' cheio' : '') + '"></span>';
+        }).join('');
+        var origem = { foto: 'Lido da foto', manual: 'Informado', exemplo: 'Exemplo' }[h.cafe && h.cafe.origem] || 'Informado';
+        var detalhe = linhaCafe(h.cafe || {});
+        return '<li class="registro">' +
+          '<div class="linha-topo"><span class="rotulo" style="font-size:10px">' + dataCurta(h.quando) + '</span><span class="rotulo" style="font-size:10px">' + origem + '</span></div>' +
+          '<span class="serif" style="font-size:22px;line-height:1.15">' + esc(nomeCafe(h.cafe)) + '</span>' +
+          (detalhe ? '<span style="font-size:12px;color:var(--texto-3)">' + detalhe + '</span>' : '') +
+          '<div class="linha-topo" style="align-items:center;margin-top:4px"><span style="font-size:13px;color:var(--texto-2)">' + esc(m.nome) + ' · ' + esc(s.nome.toLowerCase()) + '</span>' +
+          '<span class="mini-pontos" role="img" aria-label="Nota ' + h.nota + ' de 5">' + pontos + '</span></div>' +
+          '</li>';
+      }).join('');
+      var vazio = '<div class="cartao"><p class="corpo">Nenhuma xícara registrada ainda. Registre o café de hoje e toque em "Salvar e lembrar amanhã".</p></div>' +
+        '<a class="btn" href="#/registrar">Registrar o café de hoje</a>';
+      var apagar = lista.length
+        ? '<button type="button" class="link" data-acao="apagar-historico" style="align-self:flex-start">' + (sessao.apagar ? 'Toque de novo para apagar tudo' : 'Apagar histórico deste aparelho') + '</button>'
+        : '';
+      return '<section class="tela"><div class="conteudo com-nav" style="gap:22px">' +
+        '<div class="cabecalho"><a class="btn-icone" href="#/inicio" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">' + rotuloRegistros(lista.length) + ic.mini + '</span></div>' +
+        '<div style="display:flex;flex-direction:column;gap:6px"><span class="rotulo bronze">Guardado neste aparelho</span><h1 class="titulo">Minhas xícaras</h1></div>' +
+        (lista.length ? '<ul class="registros">' + itens + '</ul>' : vazio) +
+        apagar +
+        '</div>' + nav('historico') + '</section>';
     },
 
     comunidade: function () {
@@ -360,7 +407,7 @@
     app.innerHTML = telas[r]();
     var nova = app.querySelector('.tela');
     if (nova) nova.scrollTop = y;
-    var titulos = { abertura: 'Ponto — Encontre o seu ponto', inicio: 'Início · Ponto', registrar: 'Registrar · Ponto', ajuste: 'Ajuste · Ponto', paladar: 'Meu paladar · Ponto', confirmar: 'Confira os dados · Ponto', comunidade: 'Comunidade · Ponto' };
+    var titulos = { abertura: 'Ponto — Encontre o seu ponto', inicio: 'Início · Ponto', registrar: 'Registrar · Ponto', ajuste: 'Ajuste · Ponto', paladar: 'Meu paladar · Ponto', confirmar: 'Confira os dados · Ponto', historico: 'Minhas xícaras · Ponto', comunidade: 'Comunidade · Ponto' };
     document.title = titulos[r];
   }
 
@@ -381,6 +428,11 @@
     else if (acao === 'sintoma') { estado.sintoma = id; estado.dica = 0; }
     else if (acao === 'nota') { estado.nota = Number(id); }
     else if (acao === 'dica') { estado.dica = Number(id); }
+    else if (acao === 'apagar-historico') {
+      if (!sessao.apagar) { sessao.apagar = true; render(true); return; }
+      sessao.apagar = false;
+      estado.historico = [];
+    }
     else if (acao === 'foto') { if (!sessao.lendo) document.getElementById('foto-input').click(); return; }
     else if (acao === 'manual') {
       var base = estado.cafe && estado.cafe.origem !== 'exemplo' ? copia(estado.cafe) : copia(CAFE_VAZIO);
@@ -392,6 +444,13 @@
     else if (acao === 'salvar') {
       estado.salvo = { metodo: estado.metodo, sintoma: estado.sintoma };
       estado.xicaras += 1;
+      var c = estado.cafe || CAFE_EXEMPLO;
+      estado.historico.unshift({
+        quando: new Date().toISOString(),
+        cafe: { nome: c.nome, torrefacao: c.torrefacao, regiao: c.regiao, variedade: c.variedade, processo: c.processo, torra: c.torra, notas: c.notas || [], origem: c.origem || 'manual' },
+        metodo: estado.metodo, sintoma: estado.sintoma, nota: estado.nota
+      });
+      estado.historico = estado.historico.slice(0, MAX_HISTORICO);
       guardar();
       location.hash = '#/inicio';
       return;
@@ -443,7 +502,7 @@
         });
       });
     }).then(function (dados) {
-      sessao.rascunho = { cafe: dados.cafe, origem: 'foto', confianca: dados.confianca, resumo: dados.resumo, dica: dados.dica };
+      sessao.rascunho = { cafe: dados.cafe, origem: 'foto', confianca: dados.confianca, resumo: dados.resumo, dica: dados.dica, leitura_id: dados.leitura_id || null, registrado: dados.registrado === true };
     }).catch(function (erro) {
       var msg = erro && erro.message && erro.message !== 'Failed to fetch' ? erro.message : 'Sem conexão com o serviço de leitura.';
       sessao.rascunho = { cafe: copia(CAFE_VAZIO), origem: 'manual', erro: msg };
@@ -474,10 +533,22 @@
     };
     estado.retorno = r.origem === 'foto' ? { resumo: r.resumo, dica: r.dica, metodo: estado.metodo } : null;
     guardar();
+    if (r.origem === 'foto' && r.leitura_id) {
+      // Registro anônimo: o que a IA leu × o que a pessoa confirmou. Falhas são ignoradas.
+      try {
+        fetch('/api/confirmar-leitura', {
+          method: 'POST',
+          keepalive: true,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: r.leitura_id, metodo: estado.metodo, lida: r.cafe, final: estado.cafe })
+        }).catch(function () {});
+      } catch (e) { /* ignora */ }
+      r.leitura_id = null;
+    }
     location.hash = '#/registrar';
   });
 
-  window.addEventListener('hashchange', function () { render(false); });
+  window.addEventListener('hashchange', function () { sessao.apagar = false; render(false); });
   render(false);
 
   fetch('produtos.json', { cache: 'no-cache' })
