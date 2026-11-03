@@ -25,24 +25,37 @@ function prompt(metodo) {
     'Você é o assistente do Ponto, um app que ajuda iniciantes a entender e preparar café.',
     'A imagem deve ser a foto de um pacote ou rótulo de café. Leia SOMENTE o que estiver escrito ou claramente visível. Não invente dados: use null quando algo não aparecer.',
     'O usuário prepara o café em: ' + metodo + '.',
-    'Responda apenas com um objeto JSON, sem texto antes ou depois, neste formato:',
-    '{',
-    '  "eh_cafe": true ou false (a foto é de um pacote/rótulo de café?),',
-    '  "nome": nome do café ou do lote, ou null,',
-    '  "torrefacao": marca ou torrefação, ou null,',
-    '  "produtor": fazenda, sítio ou produtor, ou null,',
-    '  "regiao": região de origem (ex.: Cerrado Mineiro, Sul de Minas), ou null,',
-    '  "variedade": variedade do café (ex.: Catuaí Amarelo), ou null,',
-    '  "processo": um de ' + JSON.stringify(reg.PROCESSOS) + ' ou null,',
-    '  "torra": um de ' + JSON.stringify(reg.TORRAS) + ' ou null,',
-    '  "pontuacao_sca": número se estiver no rótulo, ou null,',
-    '  "notas": lista de até 5 notas sensoriais escritas no rótulo, em minúsculas,',
-    '  "confianca": "alta", "media" ou "baixa" (quão legível estava o rótulo),',
-    '  "resumo": uma frase simples, para iniciante, sobre o que esperar deste café na xícara, baseada no rótulo,',
-    '  "dica": uma dica prática e curta para preparar ESTE café no ' + metodo + ', com equipamento caseiro',
-    '}',
-    'Escreva resumo e dica em português do Brasil, sem jargão, com no máximo 160 caracteres cada. Se eh_cafe for false, deixe os outros campos como null e notas como [].'
+    'Registre o resultado chamando a ferramenta registrar_rotulo.',
+    'Escreva resumo e dica em português do Brasil, sem jargão, com no máximo 160 caracteres cada.',
+    'Se a foto não for de um pacote ou rótulo de café, use eh_cafe = false, deixe os outros campos como null e notas como [].'
   ].join('\n');
+}
+
+const TEXTO_OU_NULO = { type: ['string', 'null'] };
+function ferramenta(metodo) {
+  return {
+    name: 'registrar_rotulo',
+    description: 'Registra os dados lidos no rótulo do café e um retorno curto para o usuário.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        eh_cafe: { type: 'boolean', description: 'A foto é de um pacote ou rótulo de café?' },
+        nome: Object.assign({ description: 'Nome do café ou do lote' }, TEXTO_OU_NULO),
+        torrefacao: Object.assign({ description: 'Marca ou torrefação' }, TEXTO_OU_NULO),
+        produtor: Object.assign({ description: 'Fazenda, sítio ou produtor' }, TEXTO_OU_NULO),
+        regiao: Object.assign({ description: 'Região de origem, ex.: Cerrado Mineiro, Sul de Minas' }, TEXTO_OU_NULO),
+        variedade: Object.assign({ description: 'Variedade, ex.: Catuaí Amarelo' }, TEXTO_OU_NULO),
+        processo: { type: ['string', 'null'], enum: reg.PROCESSOS.concat([null]) },
+        torra: { type: ['string', 'null'], enum: reg.TORRAS.concat([null]) },
+        pontuacao_sca: { type: ['number', 'null'], description: 'Pontuação SCA, se estiver no rótulo' },
+        notas: { type: 'array', items: { type: 'string' }, maxItems: 5, description: 'Notas sensoriais escritas no rótulo, em minúsculas' },
+        confianca: { type: 'string', enum: ['alta', 'media', 'baixa'], description: 'Quão legível estava o rótulo' },
+        resumo: Object.assign({ description: 'Uma frase simples, para iniciante, sobre o que esperar deste café na xícara' }, TEXTO_OU_NULO),
+        dica: Object.assign({ description: 'Dica prática e curta para preparar este café no ' + metodo + ', com equipamento caseiro' }, TEXTO_OU_NULO)
+      },
+      required: ['eh_cafe', 'nome', 'torrefacao', 'produtor', 'regiao', 'variedade', 'processo', 'torra', 'pontuacao_sca', 'notas', 'confianca', 'resumo', 'dica']
+    }
+  };
 }
 
 function extrairJSON(t) {
@@ -107,7 +120,9 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: MODELO,
-        max_tokens: 700,
+        max_tokens: 1024,
+        tools: [ferramenta(metodo)],
+        tool_choice: { type: 'tool', name: 'registrar_rotulo' },
         messages: [{
           role: 'user',
           content: [
@@ -129,13 +144,17 @@ module.exports = async function handler(req, res) {
     }
 
     const dados = await resp.json();
-    const saida = (dados.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');
+    const blocos = dados.content || [];
+    const uso = blocos.find((b) => b.type === 'tool_use' && b.name === 'registrar_rotulo');
+    const saida = blocos.filter((b) => b.type === 'text').map((b) => b.text).join('');
     let resultado;
     try {
-      resultado = limpar(extrairJSON(saida));
+      // Caminho normal: a ferramenta devolve um objeto já estruturado. Texto com JSON é só um plano B.
+      resultado = limpar(uso && uso.input && typeof uso.input === 'object' ? uso.input : extrairJSON(saida));
     } catch (e) {
-      console.error('Resposta sem JSON válido:', saida.slice(0, 500));
-      await registrar('erro_formato');
+      const amostra = (saida || JSON.stringify(blocos)).slice(0, 800);
+      console.error('Resposta fora do formato:', dados.stop_reason, amostra);
+      await registrar('erro_formato', { stop_reason: dados.stop_reason || null, amostra: amostra });
       return res.status(502).json({ erro: 'formato', mensagem: 'Não consegui entender o rótulo. Tente outra foto ou preencha à mão.' });
     }
 
