@@ -55,13 +55,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
   position: relative;
 }
 @media (max-width: 500px), (max-height: 700px) {
-  body { display: block; background: var(--fundo); }
-  .aparelho { width: 100%; height: 100vh; height: 100dvh; border-radius: 0; border: 0; box-shadow: none; }
+  /* No celular o app fica preso à área visível: só o conteúdo de cada tela rola.
+     Sem isso, no iPhone a página inteira rola (100vh conta a área atrás das barras do Safari)
+     e a navegação de baixo anda junto. */
+  html, body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+  body { display: block; min-height: 0; background: var(--fundo); }
+  .aparelho { position: fixed; inset: env(safe-area-inset-top) 0 0 0; width: auto; height: auto; border-radius: 0; border: 0; box-shadow: none; }
 }
 
-.tela { position: absolute; inset: 0; overflow-y: auto; display: flex; flex-direction: column; }
+.tela { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; }
 .conteudo { padding: 24px; display: flex; flex-direction: column; gap: 24px; flex: 1; }
-.conteudo.com-nav { padding-top: 32px; padding-bottom: 104px; }
+.conteudo.com-nav { padding-top: 32px; padding-bottom: 32px; }
 .grupo { display: flex; flex-direction: column; gap: 8px; }
 .grupo.folgado { gap: 12px; }
 
@@ -213,7 +217,8 @@ a.cartao:hover { background-color: #201e1b; }
 
 /* Navegação inferior */
 .nav {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 72px;
+  position: sticky; bottom: 0; flex: none; width: 100%; height: calc(72px + env(safe-area-inset-bottom));
+  z-index: 2;
   border-top: 1px solid var(--linha); background: var(--fundo);
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
