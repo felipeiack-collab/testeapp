@@ -14,9 +14,9 @@
   var SINTOMAS = [
     {
       id: 'amargo', nome: 'Amargo', dica: 'pesado, queimado', adj: 'amargo',
-      titulo: 'O café passou<br>do ponto.',
+      titulo: 'O café passou do ponto',
       texto: 'A água tirou mais do pó do que devia. Dá para corrigir com o que você já tem.',
-      receita: ['15 g', '250', '92°', '3 min'], rotTemp: '+30 s',
+      receita: { cafe: 15, agua: 250, temp: 92, tempo: '3' }, rotTemp: 'ferveu + 30 s',
       dicas: [
         { t: 'Água um pouco menos quente', d: 'Desligue quando ferver e espere 30 segundos.', p: 'termometro' },
         { t: 'Moagem mais grossa', d: 'Abra um ou dois cliques no moedor. Pó de mercado: use um pouco menos.', p: 'moedor' },
@@ -25,9 +25,9 @@
     },
     {
       id: 'azedo', nome: 'Azedo', dica: 'cortante, verde', adj: 'azedo',
-      titulo: 'Faltou chegar<br>no ponto.',
+      titulo: 'Faltou chegar no ponto',
       texto: 'A água não teve tempo ou calor suficiente para tirar a doçura do pó.',
-      receita: ['15 g', '250', '96°', '4 min'], rotTemp: 'logo após ferver',
+      receita: { cafe: 15, agua: 250, temp: 96, tempo: '4' }, rotTemp: 'logo após ferver',
       dicas: [
         { t: 'Água mais quente', d: 'Use a água logo depois de ferver, sem esperar.', p: 'chaleira' },
         { t: 'Moagem mais fina', d: 'Feche um ou dois cliques no moedor.', p: 'moedor' },
@@ -36,9 +36,9 @@
     },
     {
       id: 'aguado', nome: 'Aguado', dica: 'fraco, sem graça', adj: 'aguado',
-      titulo: 'Faltou café<br>na xícara.',
+      titulo: 'Faltou café na xícara',
       texto: 'A proporção ficou com água demais para o pó que você usou.',
-      receita: ['18 g', '250', '94°', '3,5 min'], rotTemp: 'ferveu +15 s',
+      receita: { cafe: 18, agua: 250, temp: 94, tempo: '3,5' }, rotTemp: 'ferveu + 15 s',
       dicas: [
         { t: 'Mais pó na mesma água', d: 'Comece com uma colher de sopa a mais.', p: 'balanca' },
         { t: 'Moagem um pouco mais fina', d: 'Pó mais fino libera sabor mais rápido.', p: 'moedor' },
@@ -47,9 +47,9 @@
     },
     {
       id: 'seco', nome: 'Seca a boca', dica: 'adstringente', adj: 'adstringente',
-      titulo: 'A água passou<br>de forma desigual.',
+      titulo: 'A água passou de forma desigual',
       texto: 'Parte do pó extraiu demais e parte de menos. Isso deixa a boca seca.',
-      receita: ['15 g', '250', '93°', '3 min'], rotTemp: 'ferveu +20 s',
+      receita: { cafe: 15, agua: 250, temp: 93, tempo: '3' }, rotTemp: 'ferveu + 20 s',
       dicas: [
         { t: 'Molhe todo o pó primeiro', d: 'Um pouco de água em círculos, espere 30 segundos e continue.', p: 'chaleira' },
         { t: 'Moagem mais uniforme', d: 'Moedor de lâmina deixa pedaços desiguais; prefira mó.', p: 'moedor' },
@@ -58,9 +58,9 @@
     },
     {
       id: 'forte', nome: 'Forte demais', dica: 'denso, pesado', adj: 'forte demais',
-      titulo: 'Concentrado<br>demais.',
+      titulo: 'Concentrado demais',
       texto: 'Pouca água para muito pó. Fácil de acertar na próxima.',
-      receita: ['13 g', '250', '93°', '3 min'], rotTemp: 'ferveu +20 s',
+      receita: { cafe: 13, agua: 250, temp: 93, tempo: '3' }, rotTemp: 'ferveu + 20 s',
       dicas: [
         { t: 'Menos pó', d: 'Tire uma colher de sopa e compare.', p: 'balanca' },
         { t: 'Complete com água quente', d: 'Se já passou, dilua na xícara aos poucos.', p: 'jarra' },
@@ -69,9 +69,9 @@
     },
     {
       id: 'bom', nome: 'Ficou ótimo', dica: 'equilibrado', adj: 'no ponto',
-      titulo: 'No ponto.',
+      titulo: 'No ponto',
       texto: 'Guarde essa receita. Ela é o seu ponto de partida para explorar.',
-      receita: ['15 g', '250', '93°', '3 min'], rotTemp: 'ferveu +20 s',
+      receita: { cafe: 15, agua: 250, temp: 93, tempo: '3' }, rotTemp: 'ferveu + 20 s',
       dicas: [
         { t: 'Repita a receita', d: 'Faça igual amanhã para confirmar.', p: 'balanca' },
         { t: 'Troque só o café', d: 'Mesmo método, outro grão: compare as diferenças.', p: 'cafe-natural-sul-minas' },
@@ -113,20 +113,22 @@
   }
   function achar(lista, id) { for (var i = 0; i < lista.length; i++) { if (lista[i].id === id) return lista[i]; } return lista[0]; }
 
-  // ---------- Ícones ----------
+  // ---------- Ícones (uma família de linha, 18 px, traço 1,5) ----------
+  function linha(d, extra) {
+    return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"' + (extra || '') + '>' + d + '</svg>';
+  }
   var ic = {
     simbolo: function (t, traco) {
-      return '<svg width="' + t + '" height="' + t + '" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#1A1714"/><rect x=".5" y=".5" width="99" height="99" rx="21.5" fill="none" stroke="#2E2924"/><circle cx="50" cy="50" r="26" fill="none" stroke="#EFE7DA" stroke-width="' + (traco || 2.4) + '"/><circle cx="50" cy="50" r="8" fill="#B8926A"/></svg>';
+      return '<svg width="' + t + '" height="' + t + '" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#1c1a18"/><rect x=".5" y=".5" width="99" height="99" rx="21.5" fill="none" stroke="rgba(239,233,222,.08)"/><circle cx="50" cy="50" r="26" fill="none" stroke="#efe9de" stroke-width="' + (traco || 2.4) + '"/><circle cx="50" cy="50" r="8" fill="#b8926a"/></svg>';
     },
-    mini: '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="#EFE7DA" stroke-width="1.4"/><circle cx="12" cy="12" r="2.6" fill="#B8926A"/></svg>',
-    voltar: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EFE7DA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
-    camera: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#EFE7DA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
-    grao: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#B8926A" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="12" rx="7" ry="9.5" transform="rotate(30 12 12)"/><path d="M9 5.5c3 3 3 10 6 13"/></svg>',
-    sacola: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8926A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 12H7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>',
-    inicio: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6 8 6v8H4z"/></svg>',
-    xicara: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/></svg>',
-    paladar: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 12l4-3"/></svg>',
-    comunidade: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 19c1-3 3.5-4.5 6-4.5s5 1.5 6 4.5M14 15c2.5 0 4.5 1.2 5.5 4"/></svg>'
+    voltar: linha('<path d="M15 5l-7 7 7 7"/>'),
+    camera: linha('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
+    grao: linha('<ellipse cx="12" cy="12" rx="7" ry="9.5" transform="rotate(30 12 12)"/><path d="M9 5.5c3 3 3 10 6 13"/>'),
+    sacola: linha('<path d="M6 7h12l-1 12H7z"/><path d="M9 7a3 3 0 0 1 6 0"/>'),
+    inicio: linha('<path d="M4 11l8-6 8 6v8H4z"/>'),
+    xicara: linha('<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/>'),
+    paladar: linha('<circle cx="12" cy="12" r="8"/><path d="M12 12l4-3"/>'),
+    comunidade: linha('<circle cx="9" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 19c1-3 3.5-4.5 6-4.5s5 1.5 6 4.5M14 15c2.5 0 4.5 1.2 5.5 4"/>')
   };
 
   function logotipo(tam) {
@@ -141,47 +143,118 @@
       ['comunidade', 'Comunidade', ic.comunidade]
     ];
     return '<nav class="nav" aria-label="Navegação principal">' + itens.map(function (i) {
-      return '<a href="#/' + i[0] + '"' + (atual === i[0] ? ' aria-current="page"' : '') + '>' + i[2] + i[1].toUpperCase() + '</a>';
+      return '<a href="#/' + i[0] + '"' + (atual === i[0] ? ' aria-current="page"' : '') + '>' + i[2] + i[1] + '</a>';
     }).join('') + '</nav>';
   }
 
+  var DIAS = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
+  var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
   function data() {
     var d = new Date();
-    var dias = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
-    var meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
-    return dias[d.getDay()] + ' · ' + d.getDate() + ' ' + meses[d.getMonth()];
+    var dia = DIAS[d.getDay()];
+    return dia.charAt(0).toUpperCase() + dia.slice(1) + ', ' + d.getDate() + ' de ' + MESES[d.getMonth()];
   }
-
   function dataCurta(iso) {
     var d = new Date(iso);
     if (isNaN(d)) return '';
-    var dias = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-    var meses = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
     var hh = ('0' + d.getHours()).slice(-2), mm = ('0' + d.getMinutes()).slice(-2);
-    return dias[d.getDay()] + ' · ' + d.getDate() + ' ' + meses[d.getMonth()] + ' · ' + hh + ':' + mm;
+    return DIAS[d.getDay()].slice(0, 3) + ', ' + d.getDate() + ' ' + MESES[d.getMonth()].slice(0, 3) + ' · ' + hh + ':' + mm;
   }
-  function rotuloRegistros(n) { return n === 1 ? '1 registro' : n + ' registros'; }
+  function rotuloRegistros(n) { return n === 1 ? '1 xícara' : n + ' xícaras'; }
   function nomeCafe(c) { return (c && (c.nome || c.torrefacao)) || 'Café sem nome'; }
 
   function linhaCafe(c) {
     return [c.variedade, c.torra ? 'torra ' + c.torra : null, c.processo, c.regiao].filter(Boolean).map(esc).join(' · ');
   }
 
+  // ---------- Mapa do ponto ----------
+  // Extração (faltou → passou) no eixo x, força (aguado → forte) no eixo y.
+  // O ponto bronze é a xícara de hoje; o anel é o ponto certo; a seta, o ajuste de amanhã.
+  var POSICAO = {
+    amargo: { x: 0.82, y: 0.54, rumo: 'Amanhã, menos extração' },
+    azedo: { x: 0.18, y: 0.48, rumo: 'Amanhã, mais extração' },
+    aguado: { x: 0.44, y: 0.16, rumo: 'Amanhã, um café mais forte' },
+    seco: { x: 0.78, y: 0.72, rumo: 'Amanhã, uma extração mais uniforme' },
+    forte: { x: 0.56, y: 0.86, rumo: 'Amanhã, um café mais suave' },
+    bom: { x: 0.5, y: 0.5, rumo: 'No ponto, repita a receita amanhã' }
+  };
+
+  function desenhoMapa(sid, opcoes) {
+    opcoes = opcoes || {};
+    var mini = opcoes.mini;
+    var p = POSICAO[sid] || POSICAO.amargo;
+    var W = mini ? 88 : 342, H = mini ? 88 : 232;
+    var x0 = mini ? 4 : 56, x1 = W - (mini ? 4 : 8), y0 = mini ? 4 : 8, y1 = mini ? 84 : 192;
+    var w = x1 - x0, h = y1 - y0;
+    var cx = x0 + w / 2, cy = y0 + h / 2;
+    var px = x0 + p.x * w, py = y1 - p.y * h;
+    var noPonto = sid === 'bom';
+    var linhas = '';
+    [1, 2].forEach(function (k) {
+      linhas += '<line x1="' + (x0 + w * k / 3) + '" y1="' + y0 + '" x2="' + (x0 + w * k / 3) + '" y2="' + y1 + '"/>';
+      linhas += '<line x1="' + x0 + '" y1="' + (y0 + h * k / 3) + '" x2="' + x1 + '" y2="' + (y0 + h * k / 3) + '"/>';
+    });
+    var dx = px - cx, dy = py - cy, dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    var anel = mini ? 6 : 9;
+    var fimX = cx + dx / dist * (anel + 4), fimY = cy + dy / dist * (anel + 4);
+    var iniX = px - dx / dist * (mini ? 7 : 11), iniY = py - dy / dist * (mini ? 7 : 11);
+    var id = 'seta-' + (mini ? 'mini' : 'grande') + (opcoes.entra ? '-entra' : '');
+    var seta = noPonto ? '' :
+      '<g class="seta-hoje"><defs><marker id="' + id + '" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#aaa398"/></marker></defs>' +
+      '<line x1="' + iniX.toFixed(1) + '" y1="' + iniY.toFixed(1) + '" x2="' + fimX.toFixed(1) + '" y2="' + fimY.toFixed(1) + '" stroke="#aaa398" stroke-width="1.25" stroke-dasharray="3 3" marker-end="url(#' + id + ')"/></g>';
+    // Na abertura, o ponto nasce na posição de "amargo" e desliza até o anel.
+    var pontoX = opcoes.entra ? cx : px, pontoY = opcoes.entra ? cy : py;
+    var desloc = opcoes.entra ? ' style="--dx:' + (px - cx).toFixed(1) + 'px;--dy:' + (py - cy).toFixed(1) + 'px"' : '';
+    var rotulos = mini ? '' :
+      '<g font-family="Manrope, system-ui, sans-serif" font-size="12" fill="#8a847a">' +
+      '<text x="' + (x0 - 8) + '" y="' + (y0 + 12) + '" text-anchor="end">Forte</text>' +
+      '<text x="' + (x0 - 8) + '" y="' + y1 + '" text-anchor="end">Aguado</text>' +
+      '<text x="' + x0 + '" y="' + (y1 + 24) + '">Faltou</text>' +
+      '<text x="' + cx + '" y="' + (y1 + 24) + '" text-anchor="middle" fill="#aaa398">Extração</text>' +
+      '<text x="' + x1 + '" y="' + (y1 + 24) + '" text-anchor="end">Passou</text>' +
+      '<text x="' + cx + '" y="' + (y0 + h / 3 + 16) + '" text-anchor="middle" fill="#b8926a">o ponto</text></g>';
+    var titulo = noPonto ? 'Sua xícara de hoje ficou no ponto' : 'Sua xícara de hoje ficou fora do ponto. ' + p.rumo;
+    return '<svg class="' + (mini ? 'mapa-mini' : '') + (opcoes.entra ? ' entra' : '') + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(titulo) + '">' +
+      '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="' + (mini ? 8 : 12) + '" fill="#1c1a18" stroke="rgba(239,233,222,.08)"/>' +
+      '<g stroke="rgba(239,233,222,.06)" stroke-width="1">' + linhas + '</g>' +
+      '<rect x="' + (x0 + w / 3) + '" y="' + (y0 + h / 3) + '" width="' + (w / 3) + '" height="' + (h / 3) + '" rx="' + (mini ? 4 : 8) + '" fill="rgba(184,146,106,.1)" stroke="rgba(184,146,106,.36)"/>' +
+      rotulos +
+      '<circle cx="' + cx + '" cy="' + cy + '" r="' + anel + '" fill="none" stroke="#efe9de" stroke-width="1.25"/>' +
+      seta +
+      '<circle class="ponto-hoje" cx="' + pontoX.toFixed(1) + '" cy="' + pontoY.toFixed(1) + '" r="' + (mini ? 4.5 : 6.5) + '" fill="#b8926a" stroke="#12110f" stroke-width="2"' + desloc + '/>' +
+      '</svg>';
+  }
+
+  function mapa(sid) {
+    var p = POSICAO[sid] || POSICAO.amargo;
+    return '<section class="mapa" aria-label="Mapa do ponto">' +
+      '<div class="linha-topo"><span class="rotulo">Onde sua xícara caiu</span>' +
+      '<span class="legenda meta"><span><i class="marcador"></i>hoje</span><span><i class="marcador vazado"></i>o ponto</span></span></div>' +
+      desenhoMapa(sid) +
+      '<p class="rumo">' + p.rumo + '</p></section>';
+  }
+
+  function ficha(itens) {
+    return '<dl class="ficha">' + itens.map(function (i) {
+      return '<div><dt>' + i[0] + '</dt><dd>' + i[1] + (i[2] ? '<small>' + i[2] + '</small>' : '') + '</dd></div>';
+    }).join('') + '</dl>';
+  }
+
   function cartaoCafe() {
     if (sessao.lendo) {
       return '<div class="cafe" aria-busy="true"><div class="pacote"><span class="girando" aria-hidden="true"></span></div>' +
-        '<div style="display:flex;flex-direction:column;gap:3px;flex:1"><span class="rotulo bronze" style="font-size:10px">Lendo o rótulo</span>' +
-        '<span class="serif" style="font-size:22px">Um instante…</span><span style="font-size:12px;color:var(--texto-3)">Identificando origem, torra e notas.</span></div></div>';
+        '<div style="display:flex;flex-direction:column;gap:4px;flex:1"><span class="meta">Lendo o rótulo</span>' +
+        '<span class="cartao-titulo">Um instante</span><span class="meta">Identificando origem, torra e notas</span></div></div>';
     }
     var c = estado.cafe || CAFE_EXEMPLO;
-    var rotulos = { foto: 'Lido da foto', manual: 'Informado por você', exemplo: 'Exemplo · fotografe o seu' };
+    var rotulos = { foto: 'Lido da foto', manual: 'Informado por você', exemplo: 'Exemplo, fotografe o seu' };
     var miniatura = sessao.foto && c.origem === 'foto' ? '<img src="' + sessao.foto + '" alt="">' : ic.grao;
-    return '<div class="cafe"><div class="pacote">' + miniatura + '</div>' +
-      '<div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0"><span class="rotulo bronze" style="font-size:10px">' + (rotulos[c.origem] || rotulos.manual) + '</span>' +
-      '<span class="serif" style="font-size:22px">' + esc(c.nome || c.torrefacao || 'Café sem nome') + '</span>' +
-      '<span style="font-size:12px;color:var(--texto-3)">' + (linhaCafe(c) || 'Toque na câmera para ler o rótulo') + '</span></div>' +
-      '<button type="button" class="btn-icone" data-acao="foto" aria-label="Fotografar o pacote">' + ic.camera + '</button></div>' +
-      '<div class="acoes-cafe"><button type="button" class="link" data-acao="foto">Fotografar pacote</button><button type="button" class="link" data-acao="manual">Preencher à mão</button></div>';
+    return '<div class="grupo folgado"><div class="cafe"><div class="pacote">' + miniatura + '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0"><span class="meta">' + (rotulos[c.origem] || rotulos.manual) + '</span>' +
+      '<span class="cartao-titulo">' + esc(c.nome || c.torrefacao || 'Café sem nome') + '</span>' +
+      '<span class="meta">' + (linhaCafe(c) || 'Fotografe o rótulo para ver origem e torra') + '</span></div></div>' +
+      '<div class="acoes-cafe"><button type="button" class="btn secundario" data-acao="foto">' + ic.camera + 'Fotografar</button>' +
+      '<button type="button" class="link" data-acao="manual">Preencher à mão</button></div></div>';
   }
 
   // ---------- Produtos (vêm de produtos.json) ----------
@@ -197,24 +270,24 @@
 
   function cartaoProduto(id) {
     var p = produto(id);
-    var origem = p.link ? 'Afiliado' + (p.loja ? ' · ' + esc(p.loja) : '') : 'Sugestão';
+    var origem = p.link ? 'Link de afiliado' + (p.loja ? ' · ' + esc(p.loja) : '') : 'Ajuda neste ajuste';
     var acao = p.link
       ? '<a href="' + esc(p.link) + '" target="_blank" rel="sponsored noopener noreferrer">Ver na loja<span class="sr"> (abre em nova aba)</span></a>'
       : '<span class="em-breve">Em breve</span>';
     return '<div class="produto"><div class="img">' + ic.sacola + '</div><div class="info">' +
-      '<span class="rotulo" style="font-size:10px;letter-spacing:1.5px">' + origem + '</span><b>' + esc(p.nome) + '</b>' +
+      '<span class="meta">' + origem + '</span><b>' + esc(p.nome) + '</b>' +
       (p.preco ? '<span class="preco">' + p.preco + '</span>' : '') + '</div>' + acao + '</div>';
   }
 
   function degrau() {
     var p = produto('cafe-natural-sul-minas');
     var detalhe = 'Mais doçura, chocolate ao leite' + (p.preco ? ' · ' + p.preco : '');
-    var miolo = '<span class="rotulo bronze" style="font-size:10px">Agora</span><span class="serif" style="font-size:24px;line-height:1.1">' + esc(p.nome) + '</span>' +
-      '<span style="font-size:13px;color:var(--texto-3)">' + detalhe + '</span>' +
-      (p.link ? '<span class="rotulo" style="font-size:10px;color:var(--bronze)">Ver na loja · link de afiliado</span>' : '');
+    var miolo = '<span class="meta">Próximo</span><span class="cartao-titulo">' + esc(p.nome) + '</span>' +
+      '<span class="corpo menor">' + detalhe + '</span>' +
+      (p.link ? '<span class="meta">Link de afiliado · ver na loja</span>' : '');
     return p.link
-      ? '<a class="cartao destaque" style="gap:6px" href="' + esc(p.link) + '" target="_blank" rel="sponsored noopener noreferrer">' + miolo + '</a>'
-      : '<div class="cartao destaque" style="gap:6px">' + miolo + '</div>';
+      ? '<a class="cartao" href="' + esc(p.link) + '" target="_blank" rel="sponsored noopener noreferrer">' + miolo + '</a>'
+      : '<div class="cartao">' + miolo + '</div>';
   }
 
   function campo(id, rotulo, valor, dica) {
@@ -227,15 +300,24 @@
       '</select></label>';
   }
 
+  function cabecalho(voltar, texto) {
+    return '<div class="cabecalho"><a class="btn-icone" href="' + voltar + '" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">' + texto + '</span></div>';
+  }
+
+  var MIN_PALADAR = 3;
+
   // ---------- Telas ----------
   var telas = {
     abertura: function () {
       return '<section class="tela abertura">' +
-        '<div class="centro">' + ic.simbolo(132) +
-        '<div style="display:flex;flex-direction:column;gap:10px;align-items:center">' + logotipo(76) +
-        '<span class="serif" style="font-size:22px;font-style:italic;color:var(--texto-2)">Encontre o seu ponto.</span></div>' +
-        '<p class="corpo" style="max-width:280px;color:var(--texto-3)">Registre o café de cada dia, entenda o que mudou e acerte a próxima xícara com o que você já tem em casa.</p></div>' +
-        '<div class="acoes"><a class="btn" href="#/inicio">Começar</a><a class="btn contorno" href="#/inicio">Já tenho conta</a></div>' +
+        '<span class="marca">' + ic.simbolo(28, 4) + logotipo(28) + '</span>' +
+        '<div class="miolo">' +
+        '<div class="grupo folgado"><span class="rotulo">Encontre o seu ponto</span>' +
+        '<h1 class="titulo">Acerte o café com o que você já tem em casa</h1>' +
+        '<p class="corpo">Conte como ficou a xícara de hoje e receba o ajuste de amanhã: água, moagem e tempo, no seu coador.</p></div>' +
+        '<div class="mapa">' + desenhoMapa('amargo', { entra: true }) + '</div>' +
+        '</div>' +
+        '<div class="acoes"><a class="btn" href="#/inicio">Começar</a></div>' +
         '</section>';
     },
 
@@ -243,23 +325,26 @@
       var s = achar(SINTOMAS, estado.salvo.sintoma);
       var m = achar(METODOS, estado.salvo.metodo);
       var primeira = s.dicas[0];
-      var titulo = s.id === 'bom' ? 'Ontem, no ponto<br>' + m.curto + '.' : 'Ontem, ' + s.adj + '<br>' + m.curto + '.';
-      return '<section class="tela"><div class="conteudo com-nav" style="gap:22px;padding-top:36px">' +
-        '<div class="linha-topo" style="align-items:center"><span class="marca">' + ic.simbolo(30, 4) + logotipo(30) + '</span><span class="rotulo" style="font-size:11px">' + data() + '</span></div>' +
-        '<div style="display:flex;flex-direction:column;gap:6px"><span class="rotulo bronze">Sua próxima xícara</span>' +
-        '<h1 class="titulo">' + titulo + '</h1>' +
-        '<p class="corpo">Hoje: ' + primeira.t.toLowerCase() + '. ' + primeira.d + '</p></div>' +
-        '<div class="duplas"><div><span class="numero">' + s.receita[2] + '</span><span class="rotulo" style="font-size:11px">Temperatura</span></div>' +
-        '<div><span class="numero">' + s.receita[0] + ' · ' + s.receita[1] + ' ml</span><span class="rotulo" style="font-size:11px">Proporção</span></div></div>' +
+      var titulo = s.id === 'bom' ? 'Ontem, no ponto ' + m.curto : 'Ontem, ' + s.adj + ' ' + m.curto;
+      var n = estado.historico.length;
+      var faltam = Math.max(0, MIN_PALADAR - n);
+      var paladar = faltam
+        ? '<p class="corpo menor">Registre mais ' + (faltam === 1 ? '1 xícara' : faltam + ' xícaras') + ' para o Ponto começar a desenhar o seu paladar.</p>'
+        : '<p class="corpo menor">Veja um exemplo do perfil que o Ponto vai calcular com os seus registros.</p>';
+      return '<section class="tela"><div class="conteudo com-nav">' +
+        '<div class="linha-topo" style="align-items:center"><span class="marca">' + ic.simbolo(28, 4) + logotipo(28) + '</span><span class="meta">' + data() + '</span></div>' +
+        '<div class="grupo folgado"><span class="rotulo">Sua próxima xícara</span>' +
+        '<div style="display:flex;gap:16px;align-items:flex-start;justify-content:space-between"><h1 class="titulo">' + titulo + '</h1>' + desenhoMapa(s.id, { mini: true }) + '</div>' +
+        '<p class="corpo">Hoje, ' + primeira.t.charAt(0).toLowerCase() + primeira.t.slice(1) + '. ' + primeira.d + '</p></div>' +
+        ficha([['Temperatura', s.receita.temp, '°C'], ['Proporção', s.receita.cafe + ' g', '· ' + s.receita.agua + ' ml']]) +
         '<a class="btn" href="#/registrar">Registrar o café de hoje</a>' +
-        '<a class="cartao" href="#/paladar"><div class="linha-topo"><span class="serif" style="font-size:22px">Seu paladar</span><span class="rotulo">' + estado.xicaras + ' xícaras</span></div>' +
-        '<p class="corpo">Encorpado e doce, com pouca acidez. Notas de chocolate e caramelo.</p></a>' +
-        '<a class="cartao" href="#/historico"><div class="linha-topo"><span class="serif" style="font-size:22px">Minhas xícaras</span><span class="rotulo">' + rotuloRegistros(estado.historico.length) + '</span></div>' +
-        '<p class="corpo">' + (estado.historico.length ? 'Última: ' + esc(nomeCafe(estado.historico[0].cafe)) + ', ' + dataCurta(estado.historico[0].quando).toLowerCase() + '.' : 'Cada café que você registrar fica guardado aqui, neste aparelho.') + '</p></a>' +
-        '<div class="cartao"><div class="linha-topo"><span class="rotulo bronze">Trilha · Semana 1</span><span class="rotulo">3 / 5</span></div>' +
-        '<span class="serif" style="font-size:22px">A proporção certa</span>' +
-        '<p class="corpo" style="font-size:13px">Desafio: o mesmo café com 12 g e com 18 g. Qual você prefere?</p>' +
-        '<div class="barra"><span style="width:60%"></span></div></div>' +
+        '<div class="grupo">' +
+        '<a class="cartao" href="#/historico"><div class="linha-topo"><span class="cartao-titulo">Minhas xícaras</span><span class="meta">' + rotuloRegistros(n) + '</span></div>' +
+        '<p class="corpo menor">' + (n ? 'Última: ' + esc(nomeCafe(estado.historico[0].cafe)) + ', ' + dataCurta(estado.historico[0].quando) : 'Cada café que você registrar fica guardado aqui, neste aparelho.') + '</p></a>' +
+        '<a class="cartao" href="#/paladar"><div class="linha-topo"><span class="cartao-titulo">Seu paladar</span><span class="meta num">' + Math.min(n, MIN_PALADAR) + ' de ' + MIN_PALADAR + '</span></div>' + paladar + '</a>' +
+        '<div class="cartao"><div class="linha-topo"><span class="cartao-titulo">A proporção certa</span><span class="meta">Desafio da semana</span></div>' +
+        '<p class="corpo menor">O mesmo café com 12 g e com 18 g de pó. Qual você prefere?</p></div>' +
+        '</div>' +
         '</div>' + nav('inicio') + '</section>';
     },
 
@@ -268,19 +353,19 @@
         return '<button type="button" class="chip" data-acao="metodo" data-id="' + m.id + '" aria-pressed="' + (estado.metodo === m.id) + '">' + m.nome + '</button>';
       }).join('');
       var chipsS = SINTOMAS.map(function (s) {
-        return '<button type="button" class="sintoma" data-acao="sintoma" data-id="' + s.id + '" aria-pressed="' + (estado.sintoma === s.id) + '"><span class="serif">' + s.nome + '</span><small>' + s.dica + '</small></button>';
+        return '<button type="button" class="sintoma" data-acao="sintoma" data-id="' + s.id + '" aria-pressed="' + (estado.sintoma === s.id) + '"><b>' + s.nome + '</b><small>' + s.dica + '</small></button>';
       }).join('');
       var pontos = [1, 2, 3, 4, 5].map(function (n) {
         var cheio = n <= estado.nota;
-        return '<button type="button" data-acao="nota" data-id="' + n + '" aria-label="Nota ' + n + ' de 5" aria-pressed="' + (estado.nota === n) + '"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" stroke="#B8926A" stroke-width="1.5" fill="' + (cheio ? '#B8926A' : 'none') + '"/></svg></button>';
+        return '<button type="button" data-acao="nota" data-id="' + n + '" aria-label="Nota ' + n + ' de 5" aria-pressed="' + (estado.nota === n) + '"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" stroke="' + (cheio ? '#b8926a' : '#8a847a') + '" stroke-width="1.5" fill="' + (cheio ? '#b8926a' : 'none') + '"/></svg></button>';
       }).join('');
-      return '<section class="tela"><div class="conteudo" style="gap:22px">' +
-        '<div class="cabecalho"><a class="btn-icone" href="#/inicio" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">Leva 15 segundos' + ic.mini + '</span></div>' +
-        '<h1 class="titulo">Como foi<br>o café de hoje?</h1>' +
+      return '<section class="tela"><div class="conteudo">' +
+        cabecalho('#/inicio', 'Nova xícara') +
+        '<h1 class="titulo">Como foi o café de hoje?</h1>' +
         cartaoCafe() +
-        '<div class="campo"><span class="rotulo" id="r-metodo">Método</span><div class="chips" role="group" aria-labelledby="r-metodo">' + chipsM + '</div></div>' +
-        '<div class="campo"><span class="rotulo" id="r-sintoma">Como ficou na boca</span><div class="grade-2" role="group" aria-labelledby="r-sintoma">' + chipsS + '</div></div>' +
-        '<div class="linha-topo" style="align-items:center"><span class="rotulo" id="r-nota">Nota em pontos</span><div class="pontos" role="group" aria-labelledby="r-nota">' + pontos + '</div></div>' +
+        '<div class="grupo"><span class="rotulo" id="r-metodo">Método</span><div class="chips" role="group" aria-labelledby="r-metodo">' + chipsM + '</div></div>' +
+        '<div class="grupo"><span class="rotulo" id="r-sintoma">Como ficou na boca</span><div class="grade-2" role="group" aria-labelledby="r-sintoma">' + chipsS + '</div></div>' +
+        '<div class="linha-topo" style="align-items:center"><span class="rotulo" id="r-nota">Nota</span><div class="pontos" role="group" aria-labelledby="r-nota">' + pontos + '</div></div>' +
         '<a class="btn" href="#/ajuste" style="margin-top:auto">Ver como melhorar</a>' +
         '</div></section>';
     },
@@ -297,31 +382,36 @@
       }).join('');
       var r = s.receita;
       return '<section class="tela"><div class="conteudo">' +
-        '<div class="cabecalho"><a class="btn-icone" href="#/registrar" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">' + s.nome + ' · ' + m.nome + ic.mini + '</span></div>' +
-        '<div style="display:flex;flex-direction:column;gap:8px"><h1 class="titulo g">' + s.titulo + '</h1><p class="corpo">' + s.texto + '</p></div>' +
-        '<div class="dicas">' + dicas + '</div>' +
+        cabecalho('#/registrar', s.nome + ' no ' + m.nome.charAt(0).toLowerCase() + m.nome.slice(1)) +
+        '<div class="grupo folgado"><h1 class="titulo">' + s.titulo + '</h1><p class="corpo">' + s.texto + '</p></div>' +
+        mapa(s.id) +
+        '<div class="grupo"><span class="rotulo">Ajustes para amanhã</span><div class="dicas">' + dicas + '</div></div>' +
         (estado.retorno && estado.retorno.metodo === estado.metodo && estado.retorno.dica
-          ? '<div class="cartao" style="gap:6px"><span class="rotulo bronze" style="font-size:10px">Sobre ' + esc(estado.cafe.nome || 'este café') + '</span><p class="corpo" style="font-size:13px">' + esc(estado.retorno.dica) + '</p></div>'
+          ? '<div class="cartao"><span class="meta">Sobre ' + esc(estado.cafe.nome || 'este café') + '</span><p class="corpo menor">' + esc(estado.retorno.dica) + '</p></div>'
           : '') +
-        '<div class="cartao"><span class="rotulo bronze">Receita para amanhã</span>' +
-        '<div class="receita"><div><span class="numero">' + r[0] + '</span><small>Café</small></div><div><span class="numero">' + r[1] + '</span><small>ml água</small></div><div><span class="numero">' + r[2] + '</span><small>' + s.rotTemp + '</small></div><div><span class="numero">' + r[3] + '</span><small>Tempo</small></div></div>' +
-        '<p class="nota-metodo">' + m.nota + ' Sem balança? 1 colher de sopa cheia ≈ 7 g.</p></div>' +
-        '<button type="button" class="btn" data-acao="salvar" style="margin-top:auto">Salvar e lembrar amanhã</button>' +
+        '<div class="grupo folgado"><span class="rotulo">Receita para amanhã</span>' +
+        ficha([['Café', r.cafe, 'g'], ['Água', r.agua, 'ml'], ['Temperatura', r.temp, '°C · ' + s.rotTemp], ['Tempo', r.tempo, 'min']]) +
+        '<p class="nota-metodo">' + m.nota + ' Sem balança? Uma colher de sopa cheia tem cerca de 7 g.</p></div>' +
+        '<button type="button" class="btn" data-acao="salvar">Salvar e lembrar amanhã</button>' +
         '</div><div class="aviso" id="aviso" role="status"></div></section>';
     },
 
     paladar: function () {
       var eixos = [['Doçura', 'gosta muito', 80], ['Corpo', 'gosta muito', 75], ['Acidez', 'prefere pouca', 25], ['Amargor', 'tolera médio', 45]];
-      return '<section class="tela"><div class="conteudo com-nav" style="gap:22px;padding-top:36px">' +
-        '<div style="display:flex;flex-direction:column;gap:6px"><span class="rotulo bronze">Baseado em ' + estado.xicaras + ' xícaras</span><h1 class="titulo">Você prefere cafés<br>doces e encorpados.</h1></div>' +
+      var n = estado.historico.length;
+      var faltam = Math.max(0, MIN_PALADAR - n);
+      return '<section class="tela"><div class="conteudo com-nav">' +
+        '<div class="aviso-exemplo"><p class="corpo menor">Este é um perfil de exemplo. ' +
+        (faltam ? 'Ele passa a ser seu depois de mais ' + (faltam === 1 ? '1 xícara registrada' : faltam + ' xícaras registradas') + '.' : 'Em breve ele será calculado com os seus registros.') + '</p></div>' +
+        '<h1 class="titulo">Cafés doces e encorpados, com pouca acidez</h1>' +
         '<div class="eixos">' + eixos.map(function (e) {
-          return '<div class="eixo"><div class="linha-topo"><span style="font-weight:600">' + e[0] + '</span><span>' + e[1] + '</span></div><div class="barra" role="img" aria-label="' + e[0] + ': ' + e[2] + '%"><span style="width:' + e[2] + '%"></span></div></div>';
+          return '<div class="eixo"><div class="linha-topo"><span>' + e[0] + '</span><span>' + e[1] + '</span></div><div class="barra" role="img" aria-label="' + e[0] + ': ' + e[1] + '"><span style="width:' + e[2] + '%"></span></div></div>';
         }).join('') + '</div>' +
-        '<div class="campo"><span class="rotulo">Seu próximo degrau</span>' +
-        '<div class="degraus"><div><small>FEITO</small>Tradicional de mercado</div><div><small>FEITO</small>Gourmet torra média</div></div>' +
+        '<div class="grupo folgado"><span class="rotulo">Seu próximo degrau</span>' +
+        '<div class="degraus"><div><small>Feito</small>Tradicional de mercado</div><div><small>Feito</small>Gourmet torra média</div></div>' +
         degrau() + '</div>' +
-        '<div class="chips"><span class="tag">Chocolate · 5×</span><span class="tag">Caramelo · 3×</span><span class="tag apagada">Frutado · não curtiu</span></div>' +
-        '<a class="btn contorno" href="#/historico">Ver minhas xícaras</a>' +
+        '<div class="tags"><span class="tag">Chocolate · 5×</span><span class="tag">Caramelo · 3×</span><span class="tag apagada">Frutado · não curtiu</span></div>' +
+        '<a class="btn secundario" href="#/historico">Ver minhas xícaras</a>' +
         '</div>' + nav('paladar') + '</section>';
     },
 
@@ -331,26 +421,30 @@
       var porFoto = r.origem === 'foto';
       var conf = { alta: 'Rótulo bem legível', media: 'Leitura parcial, confira', baixa: 'Leitura difícil, confira com atenção' };
       var topo = porFoto
-        ? '<span class="rotulo bronze">Confira os dados</span><h1 class="titulo">Foi isso que<br>li no rótulo.</h1><p class="corpo">' + esc(conf[r.confianca] || conf.baixa) + '. Corrija o que estiver errado.</p>'
-        : '<span class="rotulo bronze">Seu café</span><h1 class="titulo">Conte qual café<br>você tomou.</h1><p class="corpo">' + (r.erro ? esc(r.erro) + ' ' : '') + 'Preencha só o que souber.</p>';
+        ? '<h1 class="titulo">Foi isso que li no rótulo</h1><p class="corpo">' + esc(conf[r.confianca] || conf.baixa) + '. Corrija o que estiver errado.</p>'
+        : '<h1 class="titulo">Conte qual café você tomou</h1><p class="corpo">' + (r.erro ? esc(r.erro) + ' ' : '') + 'Preencha só o que souber.</p>';
       var retorno = porFoto && (r.resumo || r.dica)
-        ? '<div class="cartao destaque" style="gap:8px"><span class="rotulo bronze" style="font-size:10px">O que esperar</span>' +
-          (r.resumo ? '<p class="corpo" style="color:var(--leite)">' + esc(r.resumo) + '</p>' : '') +
-          (r.dica ? '<p class="corpo" style="font-size:13px">' + esc(r.dica) + '</p>' : '') + '</div>'
+        ? '<div class="cartao"><span class="meta">O que esperar</span>' +
+          (r.resumo ? '<p class="corpo" style="color:var(--texto)">' + esc(r.resumo) + '</p>' : '') +
+          (r.dica ? '<p class="corpo menor">' + esc(r.dica) + '</p>' : '') + '</div>'
         : '';
       var foto = porFoto && sessao.foto ? '<img class="foto-lida" src="' + sessao.foto + '" alt="Foto do pacote enviada">' : '';
       return '<section class="tela"><form class="conteudo" id="form-cafe" novalidate>' +
-        '<div class="cabecalho"><a class="btn-icone" href="#/registrar" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">' + (porFoto ? 'Lido da foto' : 'Preenchimento manual') + ic.mini + '</span></div>' +
-        '<div style="display:flex;gap:16px;align-items:flex-start">' + foto + '<div style="display:flex;flex-direction:column;gap:6px;flex:1;min-width:0">' + topo + '</div></div>' +
+        cabecalho('#/registrar', porFoto ? 'Confira os dados' : 'Preenchimento manual') +
+        '<div style="display:flex;gap:16px;align-items:flex-start">' + foto + '<div class="grupo folgado" style="flex:1;min-width:0">' + topo + '</div></div>' +
         retorno +
-        campo('nome', 'Nome do café ou lote', c.nome, 'Ex.: Sítio Boa Vista') +
-        campo('torrefacao', 'Torrefação ou marca', c.torrefacao, 'Ex.: Torrefação do bairro') +
-        '<div class="grade-2" style="gap:12px">' + campo('regiao', 'Região', c.regiao, 'Ex.: Sul de Minas') + campo('variedade', 'Variedade', c.variedade, 'Ex.: Catuaí') + '</div>' +
+        '<div class="grupo folgado">' +
+        campo('nome', 'Nome do café ou lote', c.nome, 'Sítio Boa Vista') +
+        campo('torrefacao', 'Torrefação ou marca', c.torrefacao, 'Torrefação do bairro') +
+        '<div class="grade-2" style="gap:12px">' + campo('regiao', 'Região', c.regiao, 'Sul de Minas') + campo('variedade', 'Variedade', c.variedade, 'Catuaí') + '</div>' +
         '<div class="grade-2" style="gap:12px">' + seletor('processo', 'Processo', c.processo, PROCESSOS) + seletor('torra', 'Torra', c.torra, TORRAS) + '</div>' +
-        campo('notas', 'Notas do rótulo', (c.notas || []).join(', '), 'Ex.: chocolate, caramelo') +
-        '<button type="submit" class="btn" style="margin-top:8px">Usar este café</button>' +
+        campo('notas', 'Notas do rótulo', (c.notas || []).join(', '), 'chocolate, caramelo') +
+        '</div>' +
+        '<div class="grupo">' +
+        '<button type="submit" class="btn">Usar este café</button>' +
+        '<button type="button" class="btn secundario" data-acao="foto">' + ic.camera + (porFoto ? 'Tirar outra foto' : 'Fotografar o pacote') + '</button>' +
+        '</div>' +
         (porFoto && r.registrado ? '<p class="nota-metodo">Para melhorar a leitura, guardamos de forma anônima o que foi lido e o que você corrigiu. A foto não é guardada.</p>' : '') +
-        '<button type="button" class="btn contorno" data-acao="foto">' + (porFoto ? 'Tirar outra foto' : 'Fotografar o pacote') + '</button>' +
         '</form><div class="aviso" id="aviso" role="status"></div></section>';
     },
 
@@ -364,30 +458,30 @@
         var origem = { foto: 'Lido da foto', manual: 'Informado', exemplo: 'Exemplo' }[h.cafe && h.cafe.origem] || 'Informado';
         var detalhe = linhaCafe(h.cafe || {});
         return '<li class="registro">' +
-          '<div class="linha-topo"><span class="rotulo" style="font-size:10px">' + dataCurta(h.quando) + '</span><span class="rotulo" style="font-size:10px">' + origem + '</span></div>' +
-          '<span class="serif" style="font-size:22px;line-height:1.15">' + esc(nomeCafe(h.cafe)) + '</span>' +
-          (detalhe ? '<span style="font-size:12px;color:var(--texto-3)">' + detalhe + '</span>' : '') +
-          '<div class="linha-topo" style="align-items:center;margin-top:4px"><span style="font-size:13px;color:var(--texto-2)">' + esc(m.nome) + ' · ' + esc(s.nome.toLowerCase()) + '</span>' +
+          '<div class="linha-topo"><span class="meta">' + dataCurta(h.quando) + '</span><span class="meta">' + origem + '</span></div>' +
+          '<span class="cartao-titulo">' + esc(nomeCafe(h.cafe)) + '</span>' +
+          (detalhe ? '<span class="meta">' + detalhe + '</span>' : '') +
+          '<div class="linha-topo" style="align-items:center;margin-top:4px"><span class="corpo menor">' + esc(m.nome) + ' · ' + esc(s.nome.toLowerCase()) + '</span>' +
           '<span class="mini-pontos" role="img" aria-label="Nota ' + h.nota + ' de 5">' + pontos + '</span></div>' +
           '</li>';
       }).join('');
-      var vazio = '<div class="cartao"><p class="corpo">Nenhuma xícara registrada ainda. Registre o café de hoje e toque em "Salvar e lembrar amanhã".</p></div>' +
+      var vazio = '<div class="cartao"><p class="corpo menor">Nenhuma xícara registrada ainda. Registre o café de hoje e toque em Salvar e lembrar amanhã.</p></div>' +
         '<a class="btn" href="#/registrar">Registrar o café de hoje</a>';
       var apagar = lista.length
-        ? '<button type="button" class="link" data-acao="apagar-historico" style="align-self:flex-start">' + (sessao.apagar ? 'Toque de novo para apagar tudo' : 'Apagar histórico deste aparelho') + '</button>'
+        ? '<button type="button" class="link" data-acao="apagar-historico">' + (sessao.apagar ? 'Toque de novo para apagar tudo' : 'Apagar o histórico deste aparelho') + '</button>'
         : '';
-      return '<section class="tela"><div class="conteudo com-nav" style="gap:22px">' +
-        '<div class="cabecalho"><a class="btn-icone" href="#/inicio" aria-label="Voltar">' + ic.voltar + '</a><span class="rotulo">' + rotuloRegistros(lista.length) + ic.mini + '</span></div>' +
-        '<div style="display:flex;flex-direction:column;gap:6px"><span class="rotulo bronze">Guardado neste aparelho</span><h1 class="titulo">Minhas xícaras</h1></div>' +
+      return '<section class="tela"><div class="conteudo com-nav">' +
+        cabecalho('#/inicio', rotuloRegistros(lista.length)) +
+        '<div class="grupo"><h1 class="titulo">Minhas xícaras</h1><span class="meta">Guardadas só neste aparelho</span></div>' +
         (lista.length ? '<ul class="registros">' + itens + '</ul>' : vazio) +
         apagar +
         '</div>' + nav('historico') + '</section>';
     },
 
     comunidade: function () {
-      return '<section class="tela"><div class="conteudo com-nav" style="padding-top:36px">' +
-        '<span class="rotulo bronze">Em breve</span><h1 class="titulo">Comunidade</h1>' +
-        '<p class="corpo">Aqui você vai ver dicas de quem usa o mesmo método e tomou o mesmo café que você.</p>' +
+      return '<section class="tela"><div class="conteudo com-nav">' +
+        '<div class="grupo folgado"><span class="rotulo">Em breve</span><h1 class="titulo">Comunidade</h1>' +
+        '<p class="corpo">Aqui você vai ver as dicas de quem usa o mesmo método e tomou o mesmo café que você.</p></div>' +
         '</div>' + nav('comunidade') + '</section>';
     }
   };

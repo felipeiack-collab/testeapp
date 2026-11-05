@@ -40,6 +40,8 @@
 * [x] Registro anônimo das leituras e página de consulta protegida por senha
 * [x] Estrutura de produtos em `produtos.json`
 * [x] Teste de ponta a ponta no site publicado, com correção do formato da resposta da IA
+* [x] Revisão visual com a skill unslop: sem caixa alta, pílulas e pontos finais; mapa do ponto no diagnóstico; ficha da receita; paladar marcado como exemplo
+* [ ] Aplicar a mesma revisão visual em `identidade.html` e `admin.html`
 
 ## Não fazer
 
@@ -52,5 +54,6 @@
 * Não lançar comercialmente no plano gratuito da Vercel: migrar para o Pro antes.
 * Não se apresentar como "o Vivino dos cafés": o diferencial é o iniciante brasileiro e o diagnóstico pelo sintoma.
 * Não copiar a identidade visual de outra marca.
+* Não voltar aos sinais de design feito por IA: rótulos em caixa alta, tudo em pílula, bronze em todo título, pontos finais em títulos curtos. O bronze fica só no botão principal, na seleção e no ponto que marca a xícara.
 * Não começar pela coleção de microlotes raros: ela fica para depois, quando o iniciante amadurecer.
 * Não construir a comunidade antes de o app ser útil para uma pessoa sozinha.
