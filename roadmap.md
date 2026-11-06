@@ -1,6 +1,6 @@
 # App Ponto
 
-Última atualização: 2026-11-05 · site: https://testeapp-iota.vercel.app
+Última atualização: 2026-11-05 · site: https://pontocafe.vercel.app
 
 ## Objetivo e visão
 
