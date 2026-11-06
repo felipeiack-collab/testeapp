@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ponto · Apresentação</title>
+  <meta name="description" content="Ponto: um app para quem está começando no café. Vídeo de apresentação, app no ar e como foi construído.">
+  <meta name="theme-color" content="#12110f">
+  <link rel="icon" href="/img/icone.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fundo: #12110f; --superficie: #1c1a18; --elevado: #262421;
+      --linha: rgba(239,233,222,.08); --linha-forte: rgba(239,233,222,.14);
+      --texto: #efe9de; --texto-2: #aaa398; --texto-3: #8a847a;
+      --bronze: #b8926a; --bronze-linha: rgba(184,146,106,.36);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--fundo); }
+    body { background: var(--fundo); color: var(--texto); font-family: Manrope, system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+    .pagina { max-width: 880px; margin: 0 auto; padding: 32px 20px 80px; }
+    .topo { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .marca { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .marca span { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 30px; line-height: 1; }
+    .marca span i { font-style: normal; color: var(--bronze); }
+    .meta { font-size: 14px; color: var(--texto-3); }
+    .serif { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; letter-spacing: -0.01em; }
+    h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: clamp(40px, 8vw, 64px); line-height: 1.02; letter-spacing: -0.015em; margin-top: 56px; }
+    .lead { margin-top: 20px; font-size: 18px; color: var(--texto-2); max-width: 640px; }
+    .acoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 22px; border-radius: 12px; background: var(--bronze); color: #12110f; font-weight: 600; text-decoration: none; }
+    .btn:hover { background: #c39e77; }
+    .btn.sec { background: var(--superficie); color: var(--texto); border: 1px solid var(--linha-forte); font-weight: 500; }
+    .btn.sec:hover { background: var(--elevado); }
+    .video { margin-top: 40px; position: relative; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; border: 1px solid var(--linha-forte); background: #000; }
+    .video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    section { margin-top: 72px; }
+    h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: 36px; line-height: 1.1; }
+    h2 + p { margin-top: 12px; color: var(--texto-2); max-width: 640px; }
+    .grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
+    .cartao { background: var(--superficie); border: 1px solid var(--linha); border-radius: 16px; padding: 20px; }
+    .cartao b { display: block; font-weight: 500; font-size: 16px; }
+    .cartao p { margin-top: 6px; font-size: 14px; color: var(--texto-3); }
+    .n { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 28px; color: var(--bronze); line-height: 1; margin-bottom: 12px; }
+    .lista { margin-top: 24px; list-style: none; border-top: 1px solid var(--linha); }
+    .lista li { display: flex; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--linha); font-size: 15px; color: var(--texto-2); }
+    .lista li span { flex: none; width: 52px; color: var(--texto-3); font-variant-numeric: tabular-nums; }
+    .ferr { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .ferr span { padding: 8px 14px; border-radius: 10px; background: var(--superficie); border: 1px solid var(--linha-forte); font-size: 14px; }
+    .fases { margin-top: 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .fases .cartao small { font-size: 13px; color: var(--texto-3); }
+    .nao { margin-top: 24px; list-style: none; }
+    .nao li { padding: 10px 0 10px 28px; position: relative; color: var(--texto-2); }
+    .nao li:before { content: ''; position: absolute; left: 0; top: 22px; width: 14px; height: 2px; background: var(--bronze); }
+    .rodape { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--linha); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+    .rodape .serif { font-size: 24px; }
+    @media (max-width: 640px) {
+      .grade, .fases { grid-template-columns: 1fr; }
+      h1 { margin-top: 40px; }
+      section { margin-top: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="pagina">
+    <header class="topo">
+      <a class="marca" href="/" aria-label="Abrir o Ponto">
+        <svg width="32" height="32" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="22" fill="#1c1a18"/><circle cx="50" cy="50" r="26" fill="none" stroke="#efe9de" stroke-width="4"/><circle cx="50" cy="50" r="8" fill="#b8926a"/></svg>
+        <span>ponto<i>.</i></span>
+      </a>
+      <span class="meta">Projeto do curso de IA · Felipe</span>
+    </header>
+
+    <h1>Acerte o café com o que você já tem em casa</h1>
+    <p class="lead">Para quem está começando no café. Você fotografa o pacote, a IA lê o rótulo, você conta como ficou a xícara e o Ponto diz o que mudar amanhã, até no coador de pano.</p>
+    <div class="acoes">
+      <a class="btn" href="/">Abrir o app</a>
+      <a class="btn sec" href="https://github.com/felipeiack-collab/testeapp/commits/main" target="_blank" rel="noopener">Ver o código e as versões</a>
+    </div>
+
+    <div class="video">
+      <iframe src="https://www.youtube-nocookie.com/embed/mncVMMHFYEQ?rel=0" title="Vídeo de apresentação do Ponto" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    </div>
+    <p class="meta" style="margin-top:12px">2:38 · narrado com a minha voz, clonada no ElevenLabs · <a href="https://youtu.be/mncVMMHFYEQ" target="_blank" rel="noopener">abrir no YouTube</a></p>
+
+    <section>
+      <h2>Como funciona</h2>
+      <div class="grade">
+        <div class="cartao"><div class="n">1</div><b>Fotografe o pacote</b><p>Um modelo de visão do Claude lê nome, região, variedade, processo, torra e notas. Você confere e corrige.</p></div>
+        <div class="cartao"><div class="n">2</div><b>Conte como ficou</b><p>Amargo, azedo, aguado, seca a boca, forte demais ou no ponto, no método que você usa.</p></div>
+        <div class="cartao"><div class="n">3</div><b>Ajuste amanhã</b><p>O mapa mostra onde a xícara caiu, com três ajustes e a receita do dia seguinte.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Como foi construído</h2>
+      <p>Tudo conversando com o Claude, seguindo as aulas do curso: crítica da ideia, protótipo, nome, identidade, código, deploy e testes reais.</p>
+      <div class="ferr"><span>Claude</span><span>Claude API (visão)</span><span>GitHub</span><span>Vercel</span><span>ElevenLabs</span></div>
+      <ol class="lista">
+        <li><span>29/10</span>Protótipo navegável e identidade visual</li>
+        <li><span>29/10</span>Leitura do rótulo por foto com a API do Claude</li>
+        <li><span>29/10</span>Produtos sugeridos com links de afiliado</li>
+        <li><span>02/11</span>Chaves em variáveis de ambiente, fora do código</li>
+        <li><span>02/11</span>Histórico das xícaras e registro anônimo das leituras</li>
+        <li><span>02/11</span>Correção depois do primeiro teste real: resposta da IA com formato fixo</li>
+        <li><span>04/11</span>Roadmap com o que fazer e o que não fazer</li>
+        <li><span>04/11</span>Revisão visual para tirar a cara de design feito por IA</li>
+        <li><span>04/11</span>Barra de navegação estável no iPhone</li>
+        <li><span>05/11</span>Cartão para compartilhar a xícara</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Próximos passos</h2>
+      <div class="fases">
+        <div class="cartao"><small>Fase 1</small><b>Validar com 100 pessoas</b><p>Acerto da leitura do rótulo e se a nota da xícara sobe.</p></div>
+        <div class="cartao"><small>Fase 2</small><b>Paladar calculado</b><p>O perfil de cada pessoa, a partir das xícaras registradas.</p></div>
+        <div class="cartao"><small>Fase 3</small><b>Rótulo vivo</b><p>QR code no pacote de pequenas torrefações, com a receita certa e o retorno de quem bebeu.</p></div>
+        <div class="cartao"><small>Fase 4</small><b>Assinatura guiada pelo paladar</b><p>O próximo café chega de quem produz.</p></div>
+      </div>
+      <ul class="nao">
+        <li>Nada de cadastro antes de validar</li>
+        <li>Nenhuma foto guardada</li>
+        <li>A comissão nunca decide a recomendação</li>
+      </ul>
+    </section>
+
+    <footer class="rodape">
+      <span class="serif">Encontre o seu ponto</span>
+      <a class="meta" href="/">pontocafe.vercel.app</a>
+    </footer>
+  </main>
+</body>
+</html>
