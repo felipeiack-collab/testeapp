@@ -124,6 +124,7 @@
     voltar: linha('<path d="M15 5l-7 7 7 7"/>'),
     camera: linha('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
     grao: linha('<ellipse cx="12" cy="12" rx="7" ry="9.5" transform="rotate(30 12 12)"/><path d="M9 5.5c3 3 3 10 6 13"/>'),
+    compartilhar: linha('<path d="M12 4v11"/><path d="M8 8l4-4 4 4"/><path d="M5 13v6h14v-6"/>'),
     sacola: linha('<path d="M6 7h12l-1 12H7z"/><path d="M9 7a3 3 0 0 1 6 0"/>'),
     inicio: linha('<path d="M4 11l8-6 8 6v8H4z"/>'),
     xicara: linha('<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/>'),
@@ -255,6 +256,100 @@
       '<span class="meta">' + (linhaCafe(c) || 'Fotografe o rótulo para ver origem e torra') + '</span></div></div>' +
       '<div class="acoes-cafe"><button type="button" class="btn secundario" data-acao="foto">' + ic.camera + 'Fotografar</button>' +
       '<button type="button" class="link" data-acao="manual">Preencher à mão</button></div></div>';
+  }
+
+  // ---------- Cartão para compartilhar (imagem 1080 × 1350, feita no próprio aparelho) ----------
+  function quebrar(ctx, texto, largura) {
+    var palavras = texto.split(' '), linhas = [], atual = '';
+    palavras.forEach(function (p) {
+      var teste = atual ? atual + ' ' + p : p;
+      if (ctx.measureText(teste).width > largura && atual) { linhas.push(atual); atual = p; } else atual = teste;
+    });
+    if (atual) linhas.push(atual);
+    return linhas;
+  }
+
+  function imagemDoMapa(sid) {
+    var svg = desenhoMapa(sid).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="1026" height="696" ');
+    return new Promise(function (ok, falha) {
+      var img = new Image();
+      img.onload = function () { ok(img); };
+      img.onerror = falha;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    });
+  }
+
+  function desenharCartao() {
+    var s = achar(SINTOMAS, estado.sintoma), m = achar(METODOS, estado.metodo), p = POSICAO[s.id] || POSICAO.amargo, r = s.receita;
+    var serif = '"Cormorant Garamond", Georgia, serif', sans = 'Manrope, system-ui, sans-serif';
+    var fontes = document.fonts && document.fonts.load
+      ? Promise.all(['500 84px "Cormorant Garamond"', '400 32px Manrope', '500 60px Manrope'].map(function (f) { return document.fonts.load(f); })).catch(function () {})
+      : Promise.resolve();
+    return fontes.then(function () { return imagemDoMapa(s.id); }).then(function (mapaImg) {
+      var W = 1080, H = 1350, X = 80, L = W - 2 * X;
+      var c = document.createElement('canvas'); c.width = W; c.height = H;
+      var g = c.getContext('2d');
+      g.fillStyle = '#12110f'; g.fillRect(0, 0, W, H);
+      // marca
+      g.fillStyle = '#1c1a18'; g.beginPath(); g.roundRect ? g.roundRect(X, 72, 64, 64, 14) : g.rect(X, 72, 64, 64); g.fill();
+      g.strokeStyle = '#efe9de'; g.lineWidth = 3; g.beginPath(); g.arc(X + 32, 104, 17, 0, Math.PI * 2); g.stroke();
+      g.fillStyle = '#b8926a'; g.beginPath(); g.arc(X + 32, 104, 5.5, 0, Math.PI * 2); g.fill();
+      g.textBaseline = 'alphabetic';
+      g.font = '500 60px ' + serif; g.fillStyle = '#efe9de'; g.fillText('ponto', X + 88, 122);
+      var wp = g.measureText('ponto').width; g.fillStyle = '#b8926a'; g.fillText('.', X + 88 + wp, 122);
+      g.font = '400 28px ' + sans; g.fillStyle = '#8a847a'; g.textAlign = 'right'; g.fillText(data(), W - X, 116); g.textAlign = 'left';
+      // título
+      var y = 250;
+      g.font = '400 32px ' + sans; g.fillStyle = '#8a847a';
+      g.fillText(s.id === 'bom' ? 'Meu café de hoje ficou no ponto' : 'Meu café de hoje', X, y);
+      g.font = '500 84px ' + serif; g.fillStyle = '#efe9de';
+      y += 92;
+      var ls = quebrar(g, s.titulo, L);
+      ls.forEach(function (linha, i) { g.fillText(linha, X, y + i * 88); });
+      y += (ls.length - 1) * 88;
+      var cafe = estado.cafe && estado.cafe.origem !== 'exemplo' ? nomeCafe(estado.cafe) : null;
+      g.font = '400 32px ' + sans; g.fillStyle = '#aaa398';
+      y += 60; g.fillText(s.nome + ' no ' + m.nome.toLowerCase() + (cafe ? ' · ' + cafe : ''), X, y);
+      // mapa
+      y += 36;
+      var mw = L * 0.86, mh = mw * 232 / 342; g.drawImage(mapaImg, (W - mw) / 2 - 24, y, mw, mh);
+      y += mh + 34;
+      g.font = '500 32px ' + sans; g.fillStyle = '#efe9de'; g.fillText(p.rumo, X, y);
+      // receita de amanhã
+      y += 70;
+      g.font = '400 26px ' + sans; g.fillStyle = '#8a847a'; g.fillText('Receita para amanhã', X, y);
+      y += 70;
+      var itens = [[r.cafe, 'g'], [r.agua, 'ml'], [r.temp, '°C'], [r.tempo, 'min']], cx = X;
+      itens.forEach(function (it) {
+        g.font = '500 60px ' + sans; g.fillStyle = '#efe9de'; g.fillText(String(it[0]), cx, y);
+        var w = g.measureText(String(it[0])).width;
+        g.font = '400 30px ' + sans; g.fillStyle = '#aaa398'; g.fillText(it[1], cx + w + 8, y);
+        cx += w + 8 + g.measureText(it[1]).width + 56;
+      });
+      // rodapé
+      g.fillStyle = 'rgba(239,233,222,.08)'; g.fillRect(X, H - 150, L, 1);
+      g.font = '500 44px ' + serif; g.fillStyle = '#efe9de'; g.fillText('Encontre o seu ponto', X, H - 78);
+      g.font = '400 26px ' + sans; g.fillStyle = '#8a847a'; g.textAlign = 'right'; g.fillText(location.host, W - X, H - 82); g.textAlign = 'left';
+      return new Promise(function (ok) { c.toBlob(ok, 'image/png'); });
+    });
+  }
+
+  function compartilhar() {
+    if (sessao.compartilhando) return;
+    sessao.compartilhando = true;
+    var link = location.origin + '/?de=cartao';
+    desenharCartao().then(function (blob) {
+      var arquivo = new File([blob], 'meu-ponto.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
+        return navigator.share({ files: [arquivo], text: 'Acertando o meu café com o Ponto: ' + link }).catch(function () {});
+      }
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = 'meu-ponto.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+      avisar('Cartão salvo. Mande com o link ' + location.host);
+    }).catch(function () { avisar('Não consegui montar o cartão agora.'); })
+      .then(function () { sessao.compartilhando = false; });
   }
 
   // ---------- Produtos (vêm de produtos.json) ----------
@@ -392,7 +487,8 @@
         '<div class="grupo folgado"><span class="rotulo">Receita para amanhã</span>' +
         ficha([['Café', r.cafe, 'g'], ['Água', r.agua, 'ml'], ['Temperatura', r.temp, '°C · ' + s.rotTemp], ['Tempo', r.tempo, 'min']]) +
         '<p class="nota-metodo">' + m.nota + ' Sem balança? Uma colher de sopa cheia tem cerca de 7 g.</p></div>' +
-        '<button type="button" class="btn" data-acao="salvar">Salvar e lembrar amanhã</button>' +
+        '<div class="grupo"><button type="button" class="btn" data-acao="salvar">Salvar e lembrar amanhã</button>' +
+        '<button type="button" class="btn secundario" data-acao="compartilhar">' + ic.compartilhar + 'Compartilhar o cartão</button></div>' +
         '</div><div class="aviso" id="aviso" role="status"></div></section>';
     },
 
@@ -534,6 +630,7 @@
       if (rota() === 'confirmar') render(false); else location.hash = '#/confirmar';
       return;
     }
+    else if (acao === 'compartilhar') { compartilhar(); return; }
     else if (acao === 'loja') { ev.preventDefault(); avisar('Link do parceiro ainda não configurado.'); return; }
     else if (acao === 'salvar') {
       estado.salvo = { metodo: estado.metodo, sintoma: estado.sintoma };

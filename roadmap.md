@@ -1,6 +1,6 @@
 # App Ponto
 
-Última atualização: 2026-11-04 · site: https://testeapp-iota.vercel.app
+Última atualização: 2026-11-05 · site: https://testeapp-iota.vercel.app
 
 ## Objetivo e visão
 
@@ -41,6 +41,8 @@
 * [x] Estrutura de produtos em `produtos.json`
 * [x] Teste de ponta a ponta no site publicado, com correção do formato da resposta da IA
 * [x] Revisão visual com a skill unslop: sem caixa alta, pílulas e pontos finais; mapa do ponto no diagnóstico; ficha da receita; paladar marcado como exemplo
+* [x] Cartão para compartilhar a xícara (imagem feita no aparelho, com o link do app marcado com ?de=cartao)
+* [x] Vídeo de apresentação de 2:30 com as telas reais (versão sem voz); refazer em 4 min com a voz clonada no ElevenLabs
 * [ ] Aplicar a mesma revisão visual em `identidade.html` e `admin.html`
 
 ## Não fazer
