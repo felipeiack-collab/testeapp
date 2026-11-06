@@ -85,7 +85,31 @@
   var CAFE_EXEMPLO = { nome: 'Sítio Boa Vista', torrefacao: null, produtor: null, regiao: 'Cerrado Mineiro', variedade: 'Catuaí Amarelo', processo: null, torra: 'média', pontuacao_sca: null, notas: [], origem: 'exemplo' };
   var CAFE_VAZIO = { nome: null, torrefacao: null, produtor: null, regiao: null, variedade: null, processo: null, torra: null, pontuacao_sca: null, notas: [] };
   var PROCESSOS = ['natural', 'lavado', 'cereja descascado', 'honey', 'fermentado'];
-  var TORRAS = ['clara', 'média', 'média-escura', 'escura'];
+  var TORRAS = ['clara', 'média-clara', 'média', 'média-escura', 'escura'];
+
+  // Receita de partida: a torra decide a temperatura, o método decide proporção e moagem.
+  // Torra clara pede água mais quente (extrai devagar); escura, mais fria (amarga fácil).
+  var TEMP_TORRA = { 'clara': 95, 'média-clara': 94, 'média': 93, 'média-escura': 91, 'escura': 89 };
+  var PARTIDA = {
+    pano: { cafe: 15, agua: 250, moagem: 'média-fina' },
+    papel: { cafe: 15, agua: 250, moagem: 'média' },
+    prensa: { cafe: 16, agua: 250, moagem: 'grossa' },
+    italiana: { moagem: 'fina', italiana: true },
+    eletrica: { cafe: 15, agua: 250, moagem: 'média', eletrica: true }
+  };
+  function receitaPartida(torra, metodo) {
+    var t = TEMP_TORRA[torra] ? torra : 'média';
+    var r = PARTIDA[metodo] || PARTIDA.pano, temp = TEMP_TORRA[t];
+    if (r.italiana) return [['Água na base', 'quente', ''], ['Café no funil', 'cheio', ''], ['Fogo', 'baixo', ''], ['Moagem', r.moagem, '']];
+    return [['Temperatura', r.eletrica ? 'máquina' : temp, r.eletrica ? '' : '°C'], ['Café', r.cafe, 'g'], ['Água', r.agua, 'ml'], ['Moagem', r.moagem, '']];
+  }
+  function blocoPartida(c, m) {
+    if (!c || c.origem === 'exemplo') return '';
+    var sem = !TEMP_TORRA[c.torra];
+    return '<div class="grupo"><span class="rotulo">Receita de partida · ' + (sem ? 'torra não informada' : 'torra ' + esc(c.torra)) + ' ' + m.curto + '</span>' +
+      ficha(receitaPartida(c.torra, m.id)) +
+      '<p class="nota-metodo">' + (m.id === 'italiana' ? 'Água já quente até a válvula, pó sem apertar, e tire do fogo quando começar a borbulhar. ' : '') + (sem ? 'Sem a torra no rótulo, partimos da média. ' : '') + 'Prove e conte como ficou: o ajuste parte daqui.</p></div>';
+  }
 
   var padrao = { metodo: 'pano', sintoma: 'amargo', nota: 3, dica: 0, salvo: { metodo: 'pano', sintoma: 'amargo' }, xicaras: 7, cafe: CAFE_EXEMPLO, retorno: null, historico: [] };
   var MAX_HISTORICO = 200;
@@ -255,7 +279,8 @@
       '<span class="cartao-titulo">' + esc(c.nome || c.torrefacao || 'Café sem nome') + '</span>' +
       '<span class="meta">' + (linhaCafe(c) || 'Fotografe o rótulo para ver origem e torra') + '</span></div></div>' +
       '<div class="acoes-cafe"><button type="button" class="btn secundario" data-acao="foto">' + ic.camera + 'Fotografar</button>' +
-      '<button type="button" class="link" data-acao="manual">Preencher à mão</button></div></div>';
+      '<button type="button" class="link" data-acao="manual">Preencher à mão</button></div></div>' +
+      blocoPartida(c, achar(METODOS, estado.metodo));
   }
 
   // ---------- Cartão para compartilhar (imagem 1080 × 1350, feita no próprio aparelho) ----------

@@ -1,6 +1,6 @@
 # App Ponto
 
-Última atualização: 2026-11-05 · site: https://pontocafe.vercel.app
+Última atualização: 2026-11-06 · site: https://pontocafe.vercel.app
 
 ## Objetivo e visão
 
@@ -29,6 +29,7 @@
 * [ ] Medida automática de "a próxima xícara melhorou?"
 * [ ] Cadastro dos equipamentos que a pessoa tem em casa
 * [ ] Trilha real com desafios curtos
+* [ ] Versão premium (sugestão do Richard): mais receitas e outros métodos de extração
 * [ ] Apresentação do curso: novo posicionamento, comparação com apps parecidos, números do teste, vídeo da demonstração e linha do tempo das decisões
 
 ### Já feito
@@ -41,6 +42,7 @@
 * [x] Estrutura de produtos em `produtos.json`
 * [x] Teste de ponta a ponta no site publicado, com correção do formato da resposta da IA
 * [x] Revisão visual com a skill unslop: sem caixa alta, pílulas e pontos finais; mapa do ponto no diagnóstico; ficha da receita; paladar marcado como exemplo
+* [x] Receita de partida pela torra e pelo método, antes da primeira xícara, e torra média-clara (sugestões do Richard, que está abrindo uma torrefação)
 * [x] Página de apresentação em /apresentacao, com o vídeo do YouTube
 * [x] Cartão para compartilhar a xícara (imagem feita no aparelho, com o link do app marcado com ?de=cartao)
 * [x] Vídeo de apresentação de 2:30 com as telas reais (versão sem voz); refazer em 4 min com a voz clonada no ElevenLabs
