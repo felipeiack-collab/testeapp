@@ -42,9 +42,10 @@
 * [x] Estrutura de produtos em `produtos.json`
 * [x] Teste de ponta a ponta no site publicado, com correção do formato da resposta da IA
 * [x] Revisão visual com a skill unslop: sem caixa alta, pílulas e pontos finais; mapa do ponto no diagnóstico; ficha da receita; paladar marcado como exemplo
+* [x] Contagem anônima de visitas com o Vercel Web Analytics (sem cookies), por tela e por origem
 * [x] Receita de partida pela torra e pelo método, antes da primeira xícara, e torra média-clara (sugestões do Richard, que está abrindo uma torrefação)
 * [x] Página de apresentação em /apresentacao, com o vídeo do YouTube
-* [x] Cartão para compartilhar a xícara (imagem feita no aparelho, com o link do app marcado com ?de=cartao)
+* [x] Cartão para compartilhar a xícara (imagem feita no aparelho, com o link do app marcado com ?utm_source=cartao)
 * [x] Vídeo de apresentação de 2:30 com as telas reais (versão sem voz); refazer em 4 min com a voz clonada no ElevenLabs
 * [ ] Aplicar a mesma revisão visual em `identidade.html` e `admin.html`
 

@@ -362,7 +362,7 @@
   function compartilhar() {
     if (sessao.compartilhando) return;
     sessao.compartilhando = true;
-    var link = location.origin + '/?de=cartao';
+    var link = location.origin + '/?utm_source=cartao';
     desenharCartao().then(function (blob) {
       var arquivo = new File([blob], 'meu-ponto.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [arquivo] })) {
@@ -764,7 +764,11 @@
     location.hash = '#/registrar';
   });
 
-  window.addEventListener('hashchange', function () { sessao.apagar = false; render(false); });
+  window.addEventListener('hashchange', function () {
+    sessao.apagar = false; render(false);
+    // Visitas anônimas (Vercel Web Analytics): cada tela do app conta como uma página
+    try { if (window.va) window.va('pageview', { route: '/app/' + rota(), path: '/app/' + rota() }); } catch (e) { /* ignora */ }
+  });
   render(false);
 
   fetch('produtos.json', { cache: 'no-cache' })
