@@ -1,7 +1,7 @@
 {
   "name": "ponto",
   "private": true,
-  "description": "Ponto — protótipo do app para iniciantes em café",
+  "description": "Ponto — app para quem está começando no café",
   "dependencies": {
     "@vercel/blob": "^2.3.0"
   }

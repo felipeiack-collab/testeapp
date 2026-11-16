@@ -46,7 +46,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* Moldura de celular no desktop, tela cheia no celular */
 .aparelho {
   width: 390px;
-  height: 844px;
+  height: min(844px, calc(100vh - 32px));
   border-radius: 44px;
   border: 1px solid var(--linha);
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
@@ -54,7 +54,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   overflow: hidden;
   position: relative;
 }
-@media (max-width: 500px), (max-height: 700px) {
+@media (max-width: 500px) {
   /* No celular o app fica preso à área visível: só o conteúdo de cada tela rola.
      Sem isso, no iPhone a página inteira rola (100vh conta a área atrás das barras do Safari)
      e a navegação de baixo anda junto. */
@@ -131,7 +131,7 @@ a.cartao:hover { background-color: #201e1b; }
 
 /* Mapa do ponto */
 .mapa { display: flex; flex-direction: column; gap: 12px; }
-.mapa svg { display: block; width: 100%; height: auto; }
+.mapa > svg { display: block; width: 100%; height: auto; }
 .mapa .legenda { display: flex; gap: 16px; align-items: center; }
 .mapa .legenda span { display: inline-flex; align-items: center; gap: 8px; }
 .mapa .rumo { margin: 0; font-size: 15px; line-height: 22px; color: var(--texto); }
@@ -266,5 +266,47 @@ a.cartao:hover { background-color: #201e1b; }
 .campo-form select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--texto-3) 50%), linear-gradient(135deg, var(--texto-3) 50%, transparent 50%); background-position: calc(100% - 20px) 21px, calc(100% - 16px) 21px; background-size: 4px 4px; background-repeat: no-repeat; }
 
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Métodos: ícone grande, nome pequeno */
+.metodos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.metodo {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0 10px;
+  border-radius: 12px; background: var(--superficie); border: 1px solid var(--linha); color: var(--texto-3);
+  transition: background-color var(--rapido) var(--curva), border-color var(--rapido) var(--curva), color var(--rapido) var(--curva);
+}
+.metodo span { font-size: 12px; line-height: 16px; }
+.metodo:hover { color: var(--texto-2); }
+.metodo[aria-pressed="true"] { background: var(--elevado); border-color: var(--bronze-linha); color: var(--texto); }
+.metodo[aria-pressed="true"] svg { color: var(--bronze); }
+/* Reações */
+.sintoma { flex-direction: row; align-items: center; gap: 12px; }
+.sintoma > svg { flex: none; color: var(--texto-3); }
+.sintoma[aria-pressed="true"] > svg { color: var(--bronze); }
+.sintoma > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.btn:disabled { background: var(--superficie); color: var(--texto-3); border: 1px solid var(--linha); box-shadow: none; cursor: default; transform: none; }
+/* Destaque: um número por tela, em bronze */
+.ficha .destaque dd { color: var(--bronze); font-size: 40px; line-height: 44px; }
+.ficha .destaque dd small { color: var(--bronze); opacity: .8; }
+/* Primeira visita */
+.passos { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid var(--linha); }
+.passos li { display: flex; gap: 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--linha); }
+.passo-ic { width: 44px; height: 44px; flex: none; border-radius: 12px; background: var(--superficie); border: 1px solid var(--linha); display: flex; align-items: center; justify-content: center; color: var(--bronze); }
+.passos b { display: block; font-weight: 500; font-size: 15px; line-height: 22px; }
+.passos small { display: block; font-size: 13px; line-height: 18px; color: var(--texto-3); }
+/* Sequência e progresso */
+.sequencia { flex-direction: row; align-items: center; gap: 16px; }
+.seq-num { font-variant-numeric: lining-nums; font-family: var(--serif); font-size: 48px; line-height: 1; color: var(--bronze); min-width: 32px; text-align: center; }
+.sequencia b { display: block; font-weight: 500; font-size: 15px; }
+.sequencia small { display: block; font-size: 13px; color: var(--texto-3); }
+.progresso { display: flex; gap: 12px; }
+.progresso .pt { width: 16px; height: 16px; border-radius: 8px; border: 1.5px solid var(--texto-3); }
+.progresso .pt.cheio { background: var(--bronze); border-color: var(--bronze); }
+.percebido { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linha); }
+.percebido li { padding: 12px 0; border-bottom: 1px solid var(--linha); font-size: 15px; line-height: 22px; color: var(--texto-2); }
+/* Abertura: o ponto passeia */
+.viajante { transition: transform 1100ms var(--curva); }
+.legenda-passeio { margin: 0; display: flex; align-items: center; gap: 8px; min-height: 24px; font-size: 15px; color: var(--texto-2); }
+.legenda-passeio svg { color: var(--bronze); flex: none; width: 20px; height: 20px; }
+.legenda-passeio b { font-weight: 500; color: var(--texto); }
 
 /* unslop by Damir Sokolovsky (@heydamir), CC BY 4.0 — usado como guia neste redesenho */

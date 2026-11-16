@@ -4,11 +4,11 @@
 
   // ---------- Dados ----------
   var METODOS = [
-    { id: 'pano', nome: 'Coador de pano', curto: 'no coador de pano', nota: 'No pano, escalde o coador com água quente antes de colocar o pó.' },
-    { id: 'papel', nome: 'Filtro de papel', curto: 'no filtro de papel', nota: 'Molhe o filtro de papel antes para tirar o gosto de papel.' },
-    { id: 'italiana', nome: 'Italiana', curto: 'na italiana', nota: 'Na italiana, use fogo baixo e tire do fogo assim que começar a borbulhar.' },
-    { id: 'prensa', nome: 'Prensa francesa', curto: 'na prensa francesa', nota: 'Na prensa, espere 4 minutos e desça o êmbolo devagar.' },
-    { id: 'eletrica', nome: 'Cafeteira elétrica', curto: 'na cafeteira elétrica', nota: 'Na elétrica, não deixe a jarra muito tempo na chapa quente.' }
+    { id: 'pano', rotulo: 'Pano', nome: 'Coador de pano', curto: 'no coador de pano', nota: 'No pano, escalde o coador com água quente antes de colocar o pó.' },
+    { id: 'papel', rotulo: 'Papel', nome: 'Filtro de papel', curto: 'no filtro de papel', nota: 'Molhe o filtro de papel antes para tirar o gosto de papel.' },
+    { id: 'italiana', rotulo: 'Italiana', nome: 'Italiana', curto: 'na italiana', nota: 'Na italiana, use fogo baixo e tire do fogo assim que começar a borbulhar.' },
+    { id: 'prensa', rotulo: 'Prensa', nome: 'Prensa francesa', curto: 'na prensa francesa', nota: 'Na prensa, espere 4 minutos e desça o êmbolo devagar.' },
+    { id: 'eletrica', rotulo: 'Elétrica', nome: 'Cafeteira elétrica', curto: 'na cafeteira elétrica', nota: 'Na elétrica, não deixe a jarra muito tempo na chapa quente.' }
   ];
 
   var SINTOMAS = [
@@ -82,7 +82,6 @@
 
   // ---------- Estado ----------
   var CHAVE = 'ponto:estado';
-  var CAFE_EXEMPLO = { nome: 'Sítio Boa Vista', torrefacao: null, produtor: null, regiao: 'Cerrado Mineiro', variedade: 'Catuaí Amarelo', processo: null, torra: 'média', pontuacao_sca: null, notas: [], origem: 'exemplo' };
   var CAFE_VAZIO = { nome: null, torrefacao: null, produtor: null, regiao: null, variedade: null, processo: null, torra: null, pontuacao_sca: null, notas: [] };
   var PROCESSOS = ['natural', 'lavado', 'cereja descascado', 'honey', 'fermentado'];
   var TORRAS = ['clara', 'média-clara', 'média', 'média-escura', 'escura'];
@@ -101,22 +100,25 @@
     var t = TEMP_TORRA[torra] ? torra : 'média';
     var r = PARTIDA[metodo] || PARTIDA.pano, temp = TEMP_TORRA[t];
     if (r.italiana) return [['Água na base', 'quente', ''], ['Café no funil', 'cheio', ''], ['Fogo', 'baixo', ''], ['Moagem', r.moagem, '']];
-    return [['Temperatura', r.eletrica ? 'máquina' : temp, r.eletrica ? '' : '°C'], ['Café', r.cafe, 'g'], ['Água', r.agua, 'ml'], ['Moagem', r.moagem, '']];
+    return [['Temperatura', r.eletrica ? 'máquina' : temp, r.eletrica ? '' : '°C', !r.eletrica], ['Café', r.cafe, 'g'], ['Água', r.agua, 'ml'], ['Moagem', r.moagem, '']];
   }
   function blocoPartida(c, m) {
     if (!c || c.origem === 'exemplo') return '';
     var sem = !TEMP_TORRA[c.torra];
-    return '<div class="grupo"><span class="rotulo">Receita de partida · ' + (sem ? 'torra não informada' : 'torra ' + esc(c.torra)) + ' ' + m.curto + '</span>' +
+    return '<div class="grupo"><span class="rotulo">Para começar · ' + (sem ? 'torra não informada' : 'torra ' + esc(c.torra)) + ' ' + m.curto + '</span>' +
       ficha(receitaPartida(c.torra, m.id)) +
-      '<p class="nota-metodo">' + (m.id === 'italiana' ? 'Água já quente até a válvula, pó sem apertar, e tire do fogo quando começar a borbulhar. ' : '') + (sem ? 'Sem a torra no rótulo, partimos da média. ' : '') + 'Prove e conte como ficou: o ajuste parte daqui.</p></div>';
+      '<p class="nota-metodo">' + (m.id === 'italiana' ? 'Água já quente até a válvula, pó sem apertar, e tire do fogo quando começar a borbulhar. ' : '') + (sem ? 'Sem a torra no rótulo, partimos da média. ' : '') + 'Prove e conte abaixo como ficou.</p></div>';
   }
 
-  var padrao = { metodo: 'pano', sintoma: 'amargo', nota: 3, dica: 0, salvo: { metodo: 'pano', sintoma: 'amargo' }, xicaras: 7, cafe: CAFE_EXEMPLO, retorno: null, historico: [] };
+  var padrao = { metodo: 'pano', sintoma: null, nota: 0, dica: 0, salvo: null, xicaras: 0, cafe: null, retorno: null, historico: [] };
   var MAX_HISTORICO = 200;
   var estado = carregar();
   // Só em memória (não vai para o armazenamento do navegador)
   var sessao = { lendo: false, foto: null, rascunho: null, apagar: false };
   if (!Array.isArray(estado.historico)) estado.historico = [];
+  // Quem abriu versões antigas guardou o estado de demonstração: sem xícaras salvas, nada disso é da pessoa.
+  if (!estado.historico.length) { estado.salvo = null; estado.xicaras = 0; }
+  if (estado.cafe && estado.cafe.origem === 'exemplo') estado.cafe = null;
 
   function esc(v) {
     return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
@@ -153,8 +155,32 @@
     inicio: linha('<path d="M4 11l8-6 8 6v8H4z"/>'),
     xicara: linha('<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/>'),
     paladar: linha('<circle cx="12" cy="12" r="8"/><path d="M12 12l4-3"/>'),
+    lista: linha('<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1" fill="currentColor" stroke="none"/>'),
     comunidade: linha('<circle cx="9" cy="9" r="3"/><circle cx="16" cy="10" r="2.5"/><path d="M3 19c1-3 3.5-4.5 6-4.5s5 1.5 6 4.5M14 15c2.5 0 4.5 1.2 5.5 4"/>')
   };
+
+  // Métodos: desenhos de linha, mesma família dos ícones
+  var IC_METODO = {
+    pano: '<path d="M3 5h18"/><path d="M6 5c0 6.5 3 10 6 10s6-3.5 6-10"/><path d="M12 15v3"/><path d="M8 20h8"/>',
+    papel: '<path d="M4 5h16l-5 9H9z"/><path d="M9.5 8l1.2 3M14.5 8l-1.2 3"/><path d="M9 14v2.5h6V14"/><path d="M7 20h10"/>',
+    italiana: '<path d="M8.5 3h7l-.8 4.5H9.3z"/><path d="M8 7.5h8"/><path d="M7 21l2-13.5h6L17 21z"/><path d="M16.3 11h2.2v4.5l-1.7.8"/>',
+    prensa: '<rect x="6" y="7" width="11" height="14" rx="1.5"/><path d="M11.5 2.5v10"/><path d="M8 12.5h7"/><path d="M9 2.5h5"/><path d="M17 10h2v8h-2"/>',
+    eletrica: '<rect x="4" y="3" width="16" height="6" rx="1.5"/><path d="M6 9v12h12V9"/><path d="M9 13h6v5H9z"/><path d="M4 21h16"/>'
+  };
+  // Reações: a careta de quem provou
+  var OLHO = function (x) { return '<circle cx="' + x + '" cy="10" r=".9" fill="currentColor" stroke="none"/>'; };
+  var IC_CARA = {
+    amargo: '<path d="M7.5 9.2l2.5 1.2M16.5 9.2L14 10.4"/><path d="M8 16l1.3-1 1.3 1 1.4-1 1.4 1 1.3-1 1.3 1"/>',
+    azedo: '<path d="M7.5 10.5l2.5-1M14 10h2.5"/><circle cx="12" cy="15.6" r="1.4"/>',
+    aguado: OLHO(9) + OLHO(15) + '<path d="M9 15.5h6"/>',
+    seco: OLHO(9) + OLHO(15) + '<path d="M8.5 15h7"/><path d="M11 15v1.6a1 1 0 0 0 2 0V15"/>',
+    forte: '<circle cx="9" cy="10" r="1.6"/><circle cx="15" cy="10" r="1.6"/><path d="M9.5 16.5a2.5 2.2 0 0 1 5 0z"/>',
+    bom: '<path d="M7.8 10.6q1.2-1.6 2.4 0M13.8 10.6q1.2-1.6 2.4 0"/><path d="M8.5 14.3q3.5 3.4 7 0"/>'
+  };
+  function icone(desenho, tam) {
+    return '<svg width="' + tam + '" height="' + tam + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + desenho + '</svg>';
+  }
+  function cara(id, tam) { return icone('<circle cx="12" cy="12" r="9.25"/>' + (IC_CARA[id] || IC_CARA.bom), tam); }
 
   function logotipo(tam) {
     return '<span class="logotipo" style="font-size:' + tam + 'px">ponto<span class="ponto-final">.</span></span>';
@@ -164,8 +190,8 @@
     var itens = [
       ['inicio', 'Início', ic.inicio],
       ['registrar', 'Registrar', ic.xicara],
-      ['paladar', 'Paladar', ic.paladar],
-      ['comunidade', 'Comunidade', ic.comunidade]
+      ['historico', 'Xícaras', ic.lista],
+      ['paladar', 'Paladar', ic.paladar]
     ];
     return '<nav class="nav" aria-label="Navegação principal">' + itens.map(function (i) {
       return '<a href="#/' + i[0] + '"' + (atual === i[0] ? ' aria-current="page"' : '') + '>' + i[2] + i[1] + '</a>';
@@ -238,6 +264,22 @@
       '<text x="' + cx + '" y="' + (y1 + 24) + '" text-anchor="middle" fill="#aaa398">Extração</text>' +
       '<text x="' + x1 + '" y="' + (y1 + 24) + '" text-anchor="end">Passou</text>' +
       '<text x="' + cx + '" y="' + (y0 + h / 3 + 16) + '" text-anchor="middle" fill="#b8926a">o ponto</text></g>';
+    if (opcoes.passeio) {
+      var alvos = Object.keys(POSICAO).map(function (k) {
+        var q = POSICAO[k], qx = k === 'bom' ? cx : x0 + q.x * w, qy = k === 'bom' ? cy : y1 - q.y * h;
+        return 'data-' + k + '="translate(' + qx.toFixed(1) + 'px, ' + qy.toFixed(1) + 'px)"';
+      }).join(' ');
+      return '<svg class="passeio" ' + alvos + ' viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="O ponto bronze anda pelo mapa: amargo, azedo, aguado ou forte, e volta ao centro, o ponto certo">' +
+        '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="12" fill="#1c1a18" stroke="rgba(239,233,222,.08)"/>' +
+        '<g stroke="rgba(239,233,222,.06)" stroke-width="1">' + linhas + '</g>' +
+        '<rect x="' + (x0 + w / 3) + '" y="' + (y0 + h / 3) + '" width="' + (w / 3) + '" height="' + (h / 3) + '" rx="8" fill="rgba(184,146,106,.1)" stroke="rgba(184,146,106,.36)"/>' +
+        rotulos +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + anel + '" fill="none" stroke="#efe9de" stroke-width="1.25"/>' +
+        '<g class="viajante" style="transform:translate(' + px.toFixed(1) + 'px, ' + py.toFixed(1) + 'px)">' +
+        '<circle r="6.5" fill="#b8926a" stroke="#12110f" stroke-width="2"/>' +
+        '<g transform="translate(12,-9)" style="color:#efe9de"><svg width="22" height="22" viewBox="0 0 24 24" fill="#12110f" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.25"/><g class="cara" fill="none">' + IC_CARA[sid] + '</g></svg></g>' +
+        '</g></svg>';
+    }
     var titulo = noPonto ? 'Sua xícara de hoje ficou no ponto' : 'Sua xícara de hoje ficou fora do ponto. ' + p.rumo;
     return '<svg class="' + (mini ? 'mapa-mini' : '') + (opcoes.entra ? ' entra' : '') + '" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(titulo) + '">' +
       '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="' + (mini ? 8 : 12) + '" fill="#1c1a18" stroke="rgba(239,233,222,.08)"/>' +
@@ -261,7 +303,7 @@
 
   function ficha(itens) {
     return '<dl class="ficha">' + itens.map(function (i) {
-      return '<div><dt>' + i[0] + '</dt><dd>' + i[1] + (i[2] ? '<small>' + i[2] + '</small>' : '') + '</dd></div>';
+      return '<div' + (i[3] ? ' class="destaque"' : '') + '><dt>' + i[0] + '</dt><dd>' + i[1] + (i[2] ? '<small>' + i[2] + '</small>' : '') + '</dd></div>';
     }).join('') + '</dl>';
   }
 
@@ -271,16 +313,22 @@
         '<div style="display:flex;flex-direction:column;gap:4px;flex:1"><span class="meta">Lendo o rótulo</span>' +
         '<span class="cartao-titulo">Um instante</span><span class="meta">Identificando origem, torra e notas</span></div></div>';
     }
-    var c = estado.cafe || CAFE_EXEMPLO;
-    var rotulos = { foto: 'Lido da foto', manual: 'Informado por você', exemplo: 'Exemplo, fotografe o seu' };
+    var c = estado.cafe;
+    if (!c) {
+      return '<div class="grupo folgado"><div class="cafe"><div class="pacote">' + ic.grao + '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0"><span class="cartao-titulo">Qual café você tomou?</span>' +
+        '<span class="meta">Fotografe o pacote e a IA lê o rótulo</span></div></div>' +
+        '<div class="acoes-cafe"><button type="button" class="btn secundario" data-acao="foto">' + ic.camera + 'Fotografar</button>' +
+        '<button type="button" class="link" data-acao="manual">Preencher à mão</button></div></div>';
+    }
+    var rotulos = { foto: 'Lido da foto', manual: 'Informado por você' };
     var miniatura = sessao.foto && c.origem === 'foto' ? '<img src="' + sessao.foto + '" alt="">' : ic.grao;
     return '<div class="grupo folgado"><div class="cafe"><div class="pacote">' + miniatura + '</div>' +
       '<div style="display:flex;flex-direction:column;gap:4px;flex:1;min-width:0"><span class="meta">' + (rotulos[c.origem] || rotulos.manual) + '</span>' +
       '<span class="cartao-titulo">' + esc(c.nome || c.torrefacao || 'Café sem nome') + '</span>' +
       '<span class="meta">' + (linhaCafe(c) || 'Fotografe o rótulo para ver origem e torra') + '</span></div></div>' +
       '<div class="acoes-cafe"><button type="button" class="btn secundario" data-acao="foto">' + ic.camera + 'Fotografar</button>' +
-      '<button type="button" class="link" data-acao="manual">Preencher à mão</button></div></div>' +
-      blocoPartida(c, achar(METODOS, estado.metodo));
+      '<button type="button" class="link" data-acao="manual">Preencher à mão</button></div></div>';
   }
 
   // ---------- Cartão para compartilhar (imagem 1080 × 1350, feita no próprio aparelho) ----------
@@ -426,67 +474,139 @@
 
   var MIN_PALADAR = 3;
 
+  // ---------- Recompensa: sequência de dias e uma descoberta por visita ----------
+  function diaLocal(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function sequencia() {
+    var dias = {};
+    estado.historico.forEach(function (h) { var d = new Date(h.quando); if (!isNaN(d)) dias[diaLocal(d)] = true; });
+    var d = new Date(), hoje = !!dias[diaLocal(d)], n = 0;
+    if (!hoje) d.setDate(d.getDate() - 1);
+    while (dias[diaLocal(d)]) { n++; d.setDate(d.getDate() - 1); }
+    return { dias: n, hoje: hoje };
+  }
+  function contar(lista, chave) {
+    var c = {};
+    lista.forEach(function (h) { if (h[chave]) c[h[chave]] = (c[h[chave]] || 0) + 1; });
+    var top = null; Object.keys(c).forEach(function (k) { if (!top || c[k] > c[top]) top = k; });
+    return { id: top, n: top ? c[top] : 0 };
+  }
+  function descobertas() {
+    var h = estado.historico, n = h.length, lista = [];
+    if (!n) return lista;
+    var melhor = h.slice().sort(function (a, b) { return (b.nota || 0) - (a.nota || 0); })[0];
+    if (melhor && melhor.nota) lista.push('Sua melhor nota até agora: ' + melhor.nota + ' de 5, com ' + esc(nomeCafe(melhor.cafe)) + ' ' + achar(METODOS, melhor.metodo).curto + '.');
+    var primeira = h[n - 1], ultima = h[0];
+    if (n >= 2 && ultima.nota > primeira.nota) lista.push('Sua nota subiu de ' + primeira.nota + ' para ' + ultima.nota + ' desde a primeira xícara registrada.');
+    var bons = h.filter(function (x) { return x.sintoma === 'bom'; }).length;
+    if (bons) lista.push('Você já acertou o ponto ' + (bons === 1 ? '1 vez' : bons + ' vezes') + '.');
+    var sint = contar(h.filter(function (x) { return x.sintoma !== 'bom'; }), 'sintoma');
+    if (sint.n >= 2) { var s = achar(SINTOMAS, sint.id); lista.push('O que mais aparece no seu café: ' + s.adj + ' (' + sint.n + ' vezes). O ajuste que mais ajuda: ' + s.dicas[0].t.toLowerCase() + '.'); }
+    var met = contar(h, 'metodo');
+    if (n >= 2) lista.push('Seu método mais usado é o ' + achar(METODOS, met.id).nome.toLowerCase() + '.');
+    lista.push('Você já registrou ' + rotuloRegistros(n) + '. Cada uma deixa o próximo ajuste mais certeiro.');
+    return lista;
+  }
+  function descobertaDeHoje() {
+    var l = descobertas(); if (!l.length) return '';
+    var d = new Date(), dia = Math.floor((d - new Date(d.getFullYear(), 0, 0)) / 864e5);
+    return l[dia % l.length];
+  }
+
+  // ---------- Abertura: o ponto passeia pelo mapa ----------
+  var PASSEIO = ['amargo', 'bom', 'azedo', 'bom', 'aguado', 'bom', 'forte', 'bom'];
+  var passeio = null;
+  function legendaPasseio(sid) {
+    var s = achar(SINTOMAS, sid);
+    return sid === 'bom' ? '<b>No ponto</b>' : '<b>' + s.nome + '</b> · ' + (POSICAO[sid] || {}).rumo.toLowerCase();
+  }
+  function iniciarPasseio() {
+    pararPasseio();
+    var svg = app.querySelector('.passeio'), leg = app.querySelector('.legenda-passeio');
+    if (!svg || !leg) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var i = 0;
+    passeio = setInterval(function () {
+      i = (i + 1) % PASSEIO.length;
+      var sid = PASSEIO[i], g = svg.querySelector('.viajante'), alvo = svg.getAttribute('data-' + sid);
+      if (!g || !alvo) return;
+      g.style.transform = alvo;
+      g.querySelector('.cara').innerHTML = IC_CARA[sid];
+      g.classList.toggle('no-ponto', sid === 'bom');
+      leg.innerHTML = cara(sid, 20) + '<span>' + legendaPasseio(sid) + '</span>';
+    }, 1700);
+  }
+  function pararPasseio() { if (passeio) { clearInterval(passeio); passeio = null; } }
+
+
   // ---------- Telas ----------
   var telas = {
     abertura: function () {
       return '<section class="tela abertura">' +
         '<span class="marca">' + ic.simbolo(28, 4) + logotipo(28) + '</span>' +
         '<div class="miolo">' +
-        '<div class="grupo folgado"><span class="rotulo">Encontre o seu ponto</span>' +
-        '<h1 class="titulo">Acerte o café com o que você já tem em casa</h1>' +
-        '<p class="corpo">Conte como ficou a xícara de hoje e receba o ajuste de amanhã: água, moagem e tempo, no seu coador.</p></div>' +
-        '<div class="mapa">' + desenhoMapa('amargo', { entra: true }) + '</div>' +
+        '<div class="grupo folgado"><h1 class="titulo">Acerte o café com o que você já tem em casa</h1>' +
+        '<p class="corpo">Conte como ficou a xícara e saiba o que mudar amanhã.</p></div>' +
+        '<div class="mapa">' + desenhoMapa('amargo', { passeio: true }) +
+        '<p class="legenda-passeio">' + cara('amargo', 20) + '<span>' + legendaPasseio('amargo') + '</span></p></div>' +
         '</div>' +
         '<div class="acoes"><a class="btn" href="#/inicio">Começar</a></div>' +
         '</section>';
     },
 
     inicio: function () {
+      var topo = '<div class="linha-topo" style="align-items:center"><span class="marca">' + ic.simbolo(28, 4) + logotipo(28) + '</span><span class="meta">' + data() + '</span></div>';
+      var n = estado.historico.length;
+      if (!estado.salvo || !n) {
+        var passos = [[ic.camera, 'Fotografe o pacote', 'A IA lê origem, torra e notas'], [cara('amargo', 18), 'Conte como ficou', 'Amargo, azedo, aguado ou no ponto'], [ic.paladar, 'Ajuste amanhã', 'Água, moagem e tempo, no seu método']];
+        return '<section class="tela"><div class="conteudo com-nav">' + topo +
+          '<div class="grupo folgado"><span class="rotulo">Bem-vindo</span><h1 class="titulo">Vamos achar o seu ponto</h1></div>' +
+          '<ol class="passos">' + passos.map(function (p) { return '<li><span class="passo-ic">' + p[0] + '</span><span><b>' + p[1] + '</b><small>' + p[2] + '</small></span></li>'; }).join('') + '</ol>' +
+          '<a class="btn" href="#/registrar">Registrar o primeiro café</a>' +
+          '<p class="nota-metodo">Tudo fica guardado só neste aparelho. Sem cadastro.</p>' +
+          '</div>' + nav('inicio') + '</section>';
+      }
       var s = achar(SINTOMAS, estado.salvo.sintoma);
       var m = achar(METODOS, estado.salvo.metodo);
       var primeira = s.dicas[0];
       var titulo = s.id === 'bom' ? 'Ontem, no ponto ' + m.curto : 'Ontem, ' + s.adj + ' ' + m.curto;
-      var n = estado.historico.length;
+      var seq = sequencia(), desc = descobertaDeHoje();
       var faltam = Math.max(0, MIN_PALADAR - n);
-      var paladar = faltam
-        ? '<p class="corpo menor">Registre mais ' + (faltam === 1 ? '1 xícara' : faltam + ' xícaras') + ' para o Ponto começar a desenhar o seu paladar.</p>'
-        : '<p class="corpo menor">Veja um exemplo do perfil que o Ponto vai calcular com os seus registros.</p>';
-      return '<section class="tela"><div class="conteudo com-nav">' +
-        '<div class="linha-topo" style="align-items:center"><span class="marca">' + ic.simbolo(28, 4) + logotipo(28) + '</span><span class="meta">' + data() + '</span></div>' +
+      return '<section class="tela"><div class="conteudo com-nav">' + topo +
         '<div class="grupo folgado"><span class="rotulo">Sua próxima xícara</span>' +
         '<div style="display:flex;gap:16px;align-items:flex-start;justify-content:space-between"><h1 class="titulo">' + titulo + '</h1>' + desenhoMapa(s.id, { mini: true }) + '</div>' +
-        '<p class="corpo">Hoje, ' + primeira.t.charAt(0).toLowerCase() + primeira.t.slice(1) + '. ' + primeira.d + '</p></div>' +
-        ficha([['Temperatura', s.receita.temp, '°C'], ['Proporção', s.receita.cafe + ' g', '· ' + s.receita.agua + ' ml']]) +
+        '<p class="corpo">Hoje, ' + primeira.t.charAt(0).toLowerCase() + primeira.t.slice(1) + '.</p></div>' +
+        ficha([['Temperatura', s.receita.temp, '°C', true], ['Proporção', s.receita.cafe + ' g', '· ' + s.receita.agua + ' ml']]) +
         '<a class="btn" href="#/registrar">Registrar o café de hoje</a>' +
         '<div class="grupo">' +
-        '<a class="cartao" href="#/historico"><div class="linha-topo"><span class="cartao-titulo">Minhas xícaras</span><span class="meta">' + rotuloRegistros(n) + '</span></div>' +
-        '<p class="corpo menor">' + (n ? 'Última: ' + esc(nomeCafe(estado.historico[0].cafe)) + ', ' + dataCurta(estado.historico[0].quando) : 'Cada café que você registrar fica guardado aqui, neste aparelho.') + '</p></a>' +
-        '<a class="cartao" href="#/paladar"><div class="linha-topo"><span class="cartao-titulo">Seu paladar</span><span class="meta num">' + Math.min(n, MIN_PALADAR) + ' de ' + MIN_PALADAR + '</span></div>' + paladar + '</a>' +
-        '<div class="cartao"><div class="linha-topo"><span class="cartao-titulo">A proporção certa</span><span class="meta">Desafio da semana</span></div>' +
-        '<p class="corpo menor">O mesmo café com 12 g e com 18 g de pó. Qual você prefere?</p></div>' +
+        (seq.dias ? '<div class="cartao sequencia"><span class="seq-num">' + seq.dias + '</span><span><b>' + (seq.dias === 1 ? 'dia' : 'dias seguidos') + ' registrando</b><small>' + (seq.hoje ? 'Sequência em dia. Até amanhã!' : 'Registre hoje para manter a sequência') + '</small></span></div>' : '') +
+        (desc ? '<div class="cartao"><span class="meta">Descoberta de hoje</span><p class="corpo" style="color:var(--texto)">' + desc + '</p></div>' : '') +
+        (faltam ? '<a class="cartao" href="#/paladar"><div class="linha-topo"><span class="cartao-titulo">Seu paladar</span><span class="meta num">' + n + ' de ' + MIN_PALADAR + '</span></div><p class="corpo menor">Faltam ' + (faltam === 1 ? '1 xícara' : faltam + ' xícaras') + ' para ver os seus padrões.</p></a>' : '') +
         '</div>' +
         '</div>' + nav('inicio') + '</section>';
     },
 
     registrar: function () {
       var chipsM = METODOS.map(function (m) {
-        return '<button type="button" class="chip" data-acao="metodo" data-id="' + m.id + '" aria-pressed="' + (estado.metodo === m.id) + '">' + m.nome + '</button>';
+        return '<button type="button" class="metodo" data-acao="metodo" data-id="' + m.id + '" aria-pressed="' + (estado.metodo === m.id) + '" aria-label="' + m.nome + '">' + icone(IC_METODO[m.id], 32) + '<span>' + m.rotulo + '</span></button>';
       }).join('');
       var chipsS = SINTOMAS.map(function (s) {
-        return '<button type="button" class="sintoma" data-acao="sintoma" data-id="' + s.id + '" aria-pressed="' + (estado.sintoma === s.id) + '"><b>' + s.nome + '</b><small>' + s.dica + '</small></button>';
+        return '<button type="button" class="sintoma" data-acao="sintoma" data-id="' + s.id + '" aria-pressed="' + (estado.sintoma === s.id) + '">' + cara(s.id, 28) + '<span><b>' + s.nome + '</b><small>' + s.dica + '</small></span></button>';
       }).join('');
       var pontos = [1, 2, 3, 4, 5].map(function (n) {
         var cheio = n <= estado.nota;
         return '<button type="button" data-acao="nota" data-id="' + n + '" aria-label="Nota ' + n + ' de 5" aria-pressed="' + (estado.nota === n) + '"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7" stroke="' + (cheio ? '#b8926a' : '#8a847a') + '" stroke-width="1.5" fill="' + (cheio ? '#b8926a' : 'none') + '"/></svg></button>';
       }).join('');
+      var pronto = !!estado.sintoma;
       return '<section class="tela"><div class="conteudo">' +
         cabecalho('#/inicio', 'Nova xícara') +
         '<h1 class="titulo">Como foi o café de hoje?</h1>' +
         cartaoCafe() +
-        '<div class="grupo"><span class="rotulo" id="r-metodo">Método</span><div class="chips" role="group" aria-labelledby="r-metodo">' + chipsM + '</div></div>' +
+        '<div class="grupo"><span class="rotulo" id="r-metodo">Método</span><div class="metodos" role="group" aria-labelledby="r-metodo">' + chipsM + '</div></div>' +
+        blocoPartida(estado.cafe, achar(METODOS, estado.metodo)) +
         '<div class="grupo"><span class="rotulo" id="r-sintoma">Como ficou na boca</span><div class="grade-2" role="group" aria-labelledby="r-sintoma">' + chipsS + '</div></div>' +
         '<div class="linha-topo" style="align-items:center"><span class="rotulo" id="r-nota">Nota</span><div class="pontos" role="group" aria-labelledby="r-nota">' + pontos + '</div></div>' +
-        '<a class="btn" href="#/ajuste" style="margin-top:auto">Ver como melhorar</a>' +
+        (pronto ? '<a class="btn" href="#/ajuste" style="margin-top:auto">Ver como melhorar</a>'
+          : '<button type="button" class="btn" disabled style="margin-top:auto">Escolha como ficou na boca</button>') +
         '</div></section>';
     },
 
@@ -510,7 +630,7 @@
           ? '<div class="cartao"><span class="meta">Sobre ' + esc(estado.cafe.nome || 'este café') + '</span><p class="corpo menor">' + esc(estado.retorno.dica) + '</p></div>'
           : '') +
         '<div class="grupo folgado"><span class="rotulo">Receita para amanhã</span>' +
-        ficha([['Café', r.cafe, 'g'], ['Água', r.agua, 'ml'], ['Temperatura', r.temp, '°C · ' + s.rotTemp], ['Tempo', r.tempo, 'min']]) +
+        ficha([['Temperatura', r.temp, '°C · ' + s.rotTemp, ['amargo', 'azedo', 'seco'].indexOf(s.id) > -1], ['Café', r.cafe, 'g', ['aguado', 'forte'].indexOf(s.id) > -1], ['Água', r.agua, 'ml'], ['Tempo', r.tempo, 'min']]) +
         '<p class="nota-metodo">' + m.nota + ' Sem balança? Uma colher de sopa cheia tem cerca de 7 g.</p></div>' +
         '<div class="grupo"><button type="button" class="btn" data-acao="salvar">Salvar e lembrar amanhã</button>' +
         '<button type="button" class="btn secundario" data-acao="compartilhar">' + ic.compartilhar + 'Compartilhar o cartão</button></div>' +
@@ -518,20 +638,29 @@
     },
 
     paladar: function () {
-      var eixos = [['Doçura', 'gosta muito', 80], ['Corpo', 'gosta muito', 75], ['Acidez', 'prefere pouca', 25], ['Amargor', 'tolera médio', 45]];
-      var n = estado.historico.length;
-      var faltam = Math.max(0, MIN_PALADAR - n);
+      var h = estado.historico, n = h.length, faltam = Math.max(0, MIN_PALADAR - n);
+      if (faltam) {
+        var bolinhas = [];
+        for (var i = 1; i <= MIN_PALADAR; i++) bolinhas.push('<span class="pt' + (i <= n ? ' cheio' : '') + '"></span>');
+        return '<section class="tela"><div class="conteudo com-nav">' +
+          '<div class="grupo folgado"><span class="rotulo">Seu paladar</span><h1 class="titulo">Faltam ' + (faltam === 1 ? '1 xícara' : faltam + ' xícaras') + '</h1>' +
+          '<p class="corpo">Com ' + MIN_PALADAR + ' xícaras registradas, o Ponto mostra o que mais acontece no seu café e o que funciona para você.</p></div>' +
+          '<div class="progresso" role="img" aria-label="' + n + ' de ' + MIN_PALADAR + ' xícaras">' + bolinhas.join('') + '</div>' +
+          '<a class="btn" href="#/registrar">Registrar uma xícara</a>' +
+          '</div>' + nav('paladar') + '</section>';
+      }
+      var media = h.reduce(function (t, x) { return t + (x.nota || 0); }, 0) / n;
+      var met = contar(h, 'metodo'), bons = h.filter(function (x) { return x.sintoma === 'bom'; }).length;
+      var sint = contar(h.filter(function (x) { return x.sintoma !== 'bom'; }), 'sintoma');
+      var titulo = sint.id && sint.n >= Math.max(2, bons)
+        ? 'Seu café costuma sair ' + achar(SINTOMAS, sint.id).adj
+        : 'Você já acerta o ponto ' + achar(METODOS, met.id).curto;
+      var lista = descobertas().map(function (d) { return '<li>' + d + '</li>'; }).join('');
       return '<section class="tela"><div class="conteudo com-nav">' +
-        '<div class="aviso-exemplo"><p class="corpo menor">Este é um perfil de exemplo. ' +
-        (faltam ? 'Ele passa a ser seu depois de mais ' + (faltam === 1 ? '1 xícara registrada' : faltam + ' xícaras registradas') + '.' : 'Em breve ele será calculado com os seus registros.') + '</p></div>' +
-        '<h1 class="titulo">Cafés doces e encorpados, com pouca acidez</h1>' +
-        '<div class="eixos">' + eixos.map(function (e) {
-          return '<div class="eixo"><div class="linha-topo"><span>' + e[0] + '</span><span>' + e[1] + '</span></div><div class="barra" role="img" aria-label="' + e[0] + ': ' + e[1] + '"><span style="width:' + e[2] + '%"></span></div></div>';
-        }).join('') + '</div>' +
-        '<div class="grupo folgado"><span class="rotulo">Seu próximo degrau</span>' +
-        '<div class="degraus"><div><small>Feito</small>Tradicional de mercado</div><div><small>Feito</small>Gourmet torra média</div></div>' +
-        degrau() + '</div>' +
-        '<div class="tags"><span class="tag">Chocolate · 5×</span><span class="tag">Caramelo · 3×</span><span class="tag apagada">Frutado · não curtiu</span></div>' +
+        '<div class="grupo folgado"><span class="rotulo">Seu paladar · ' + rotuloRegistros(n) + '</span><h1 class="titulo">' + titulo + '</h1></div>' +
+        ficha([['Nota média', media.toFixed(1).replace('.', ','), 'de 5', true], ['No ponto', bons, bons === 1 ? 'vez' : 'vezes'], ['Método', achar(METODOS, met.id).rotulo, ''], ['Xícaras', n, '']]) +
+        '<div class="grupo"><span class="rotulo">O que o Ponto percebeu</span><ul class="percebido">' + lista + '</ul></div>' +
+        '<div class="grupo folgado"><span class="rotulo">Seu próximo degrau</span>' + degrau() + '</div>' +
         '<a class="btn secundario" href="#/historico">Ver minhas xícaras</a>' +
         '</div>' + nav('paladar') + '</section>';
     },
@@ -619,7 +748,10 @@
     var tela = app.querySelector('.tela');
     var y = manterRolagem && tela ? tela.scrollTop : 0;
     var r = rota();
+    if (r === 'ajuste' && !estado.sintoma) { location.replace('#/registrar'); return; }
+    pararPasseio();
     app.innerHTML = telas[r]();
+    if (r === 'abertura') iniciarPasseio();
     var nova = app.querySelector('.tela');
     if (nova) nova.scrollTop = y;
     var titulos = { abertura: 'Ponto — Encontre o seu ponto', inicio: 'Início · Ponto', registrar: 'Registrar · Ponto', ajuste: 'Ajuste · Ponto', paladar: 'Meu paladar · Ponto', confirmar: 'Confira os dados · Ponto', historico: 'Minhas xícaras · Ponto', comunidade: 'Comunidade · Ponto' };
@@ -660,13 +792,14 @@
     else if (acao === 'salvar') {
       estado.salvo = { metodo: estado.metodo, sintoma: estado.sintoma };
       estado.xicaras += 1;
-      var c = estado.cafe || CAFE_EXEMPLO;
+      var c = estado.cafe || copia(CAFE_VAZIO);
       estado.historico.unshift({
         quando: new Date().toISOString(),
         cafe: { nome: c.nome, torrefacao: c.torrefacao, regiao: c.regiao, variedade: c.variedade, processo: c.processo, torra: c.torra, notas: c.notas || [], origem: c.origem || 'manual' },
         metodo: estado.metodo, sintoma: estado.sintoma, nota: estado.nota
       });
       estado.historico = estado.historico.slice(0, MAX_HISTORICO);
+      estado.sintoma = null; estado.nota = 0; estado.dica = 0;
       guardar();
       location.hash = '#/inicio';
       return;
