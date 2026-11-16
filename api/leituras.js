@@ -44,7 +44,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const [leituras, confirmacoes] = await Promise.all([reg.listar('leituras', MAX), reg.listar('confirmacoes', MAX)]);
+    const [leituras, confirmacoes, sugestoes] = await Promise.all([reg.listar('leituras', MAX), reg.listar('confirmacoes', MAX), reg.listar('sugestoes', 200).catch(() => [])]);
     const porId = new Map(confirmacoes.map((c) => [c.id, c]));
 
     const itens = leituras.map((l) => {
@@ -86,7 +86,8 @@ module.exports = async function handler(req, res) {
         confirmadas_sem_correcao: confirmadas.filter((i) => i.sem_correcao).length,
         acerto_por_campo_pct: acertoPorCampo
       },
-      itens: itens
+      itens: itens,
+      sugestoes: sugestoes.map((x) => ({ quando: x.quando, texto: x.texto, tela: x.tela, metodo: x.metodo, xicaras: x.xicaras }))
     });
   } catch (e) {
     console.error('Falha ao listar registros:', e && e.message);

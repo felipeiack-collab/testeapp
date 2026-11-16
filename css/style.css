@@ -309,4 +309,11 @@ a.cartao:hover { background-color: #201e1b; }
 .legenda-passeio svg { color: var(--bronze); flex: none; width: 20px; height: 20px; }
 .legenda-passeio b { font-weight: 500; color: var(--texto); }
 
+/* Sugestão e instalar */
+.campo-form textarea { width: 100%; padding: 12px; border-radius: 10px; background: var(--superficie); color: var(--texto); border: 1px solid var(--linha-forte); font: 400 15px/22px var(--sans); resize: vertical; }
+.campo-form textarea:focus { outline: none; border-color: var(--bronze-linha); background: var(--elevado); }
+.campo-form textarea::placeholder { color: var(--texto-3); }
+.link.fechar { min-height: 24px; font-size: 13px; text-decoration: none; color: var(--texto-3); }
+.corpo b { color: var(--texto); font-weight: 500; }
+
 /* unslop by Damir Sokolovsky (@heydamir), CC BY 4.0 — usado como guia neste redesenho */

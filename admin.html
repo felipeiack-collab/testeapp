@@ -75,6 +75,10 @@
       </div>
       <div class="grade" id="totais"></div>
       <div style="display:flex;flex-direction:column;gap:12px">
+        <span class="rotulo" id="sug-titulo">Sugestões enviadas pelo app</span>
+        <div id="sugestoes" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
         <span class="rotulo">Acerto da IA por campo (entre as leituras confirmadas)</span>
         <div class="campos" id="campos"></div>
       </div>
@@ -148,6 +152,12 @@
         card(r.lidas_com_sucesso, 'Lidas com sucesso', (pr.nao_cafe || 0) + ((pr.nao_cafe || 0) === 1 ? ' não era café' : ' não eram café') + ' · ' + falhas + ' com erro') +
         card(r.confirmadas, 'Confirmadas pela pessoa', r.lidas_com_sucesso ? Math.round((r.confirmadas / r.lidas_com_sucesso) * 100) + '% das lidas' : '') +
         card(pct, 'Sem nenhuma correção', r.confirmadas_sem_correcao + ' de ' + r.confirmadas);
+      var sug = dados.sugestoes || [];
+      $('sug-titulo').textContent = 'Sugestões enviadas pelo app (' + sug.length + ')';
+      $('sugestoes').innerHTML = sug.length ? sug.map(function (x) {
+        return '<div class="card" style="gap:6px"><span class="fraco">' + esc(quando(x.quando)) + (x.tela ? ' · tela ' + esc(x.tela) : '') + (x.metodo ? ' · ' + esc(METODOS[x.metodo] || x.metodo) : '') + (x.xicaras != null ? ' · ' + esc(x.xicaras) + ' xícaras' : '') + '</span>' +
+          '<span style="white-space:pre-wrap">' + esc(x.texto) + '</span></div>';
+      }).join('') : '<span class="fraco">Nenhuma sugestão ainda.</span>';
       var campos = r.acerto_por_campo_pct || {};
       $('campos').innerHTML = Object.keys(NOMES).map(function (k) {
         var v = campos[k];

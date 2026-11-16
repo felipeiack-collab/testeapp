@@ -114,7 +114,7 @@
   var MAX_HISTORICO = 200;
   var estado = carregar();
   // Só em memória (não vai para o armazenamento do navegador)
-  var sessao = { lendo: false, foto: null, rascunho: null, apagar: false };
+  var sessao = { lendo: false, foto: null, rascunho: null, apagar: false, instalar: null, enviando: false };
   if (!Array.isArray(estado.historico)) estado.historico = [];
   // Quem abriu versões antigas guardou o estado de demonstração: sem xícaras salvas, nada disso é da pessoa.
   if (!estado.historico.length) { estado.salvo = null; estado.xicaras = 0; }
@@ -474,6 +474,33 @@
 
   var MIN_PALADAR = 3;
 
+  // ---------- Instalar na tela inicial ----------
+  function instalado() {
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+  }
+  function ehIphone() { return /iphone|ipad|ipod/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent); }
+  function linkSugestao() {
+    return '<a class="link" href="#/sugestao">Tem uma ideia ou achou um problema? Mande pra gente</a>';
+  }
+  function cartaoInstalar() {
+    if (instalado() || estado.instalarFechado) return '';
+    var corpo;
+    if (sessao.instalar) corpo = '<button type="button" class="btn secundario" data-acao="instalar">Adicionar à tela inicial</button>';
+    else if (ehIphone()) corpo = '<p class="corpo menor">No Safari, toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</p>';
+    else return '';
+    return '<div class="cartao"><div class="linha-topo"><span class="cartao-titulo">Ponto na tela inicial</span>' +
+      '<button type="button" class="link fechar" data-acao="fechar-instalar" aria-label="Agora não">Agora não</button></div>' +
+      '<p class="corpo menor">Abra direto, como um app, na hora do café.</p>' + corpo + '</div>';
+  }
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); sessao.instalar = e;
+    if (rota() === 'inicio') render(true);
+  });
+  window.addEventListener('appinstalled', function () { sessao.instalar = null; if (rota() === 'inicio') render(true); });
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
+  }
+
   // ---------- Recompensa: sequência de dias e uma descoberta por visita ----------
   function diaLocal(d) { return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
   function sequencia() {
@@ -562,8 +589,8 @@
           '<div class="grupo folgado"><span class="rotulo">Bem-vindo</span><h1 class="titulo">Vamos achar o seu ponto</h1></div>' +
           '<ol class="passos">' + passos.map(function (p) { return '<li><span class="passo-ic">' + p[0] + '</span><span><b>' + p[1] + '</b><small>' + p[2] + '</small></span></li>'; }).join('') + '</ol>' +
           '<a class="btn" href="#/registrar">Registrar o primeiro café</a>' +
-          '<p class="nota-metodo">Tudo fica guardado só neste aparelho. Sem cadastro.</p>' +
-          '</div>' + nav('inicio') + '</section>';
+          '<p class="nota-metodo">Tudo fica guardado só neste aparelho. Sem cadastro.</p>' + linkSugestao() +
+          '</div><div class="aviso" id="aviso" role="status"></div>' + nav('inicio') + '</section>';
       }
       var s = achar(SINTOMAS, estado.salvo.sintoma);
       var m = achar(METODOS, estado.salvo.metodo);
@@ -580,9 +607,23 @@
         '<div class="grupo">' +
         (seq.dias ? '<div class="cartao sequencia"><span class="seq-num">' + seq.dias + '</span><span><b>' + (seq.dias === 1 ? 'dia' : 'dias seguidos') + ' registrando</b><small>' + (seq.hoje ? 'Sequência em dia. Até amanhã!' : 'Registre hoje para manter a sequência') + '</small></span></div>' : '') +
         (desc ? '<div class="cartao"><span class="meta">Descoberta de hoje</span><p class="corpo" style="color:var(--texto)">' + desc + '</p></div>' : '') +
+        cartaoInstalar() +
         (faltam ? '<a class="cartao" href="#/paladar"><div class="linha-topo"><span class="cartao-titulo">Seu paladar</span><span class="meta num">' + n + ' de ' + MIN_PALADAR + '</span></div><p class="corpo menor">Faltam ' + (faltam === 1 ? '1 xícara' : faltam + ' xícaras') + ' para ver os seus padrões.</p></a>' : '') +
         '</div>' +
-        '</div>' + nav('inicio') + '</section>';
+        linkSugestao() +
+        '</div><div class="aviso" id="aviso" role="status"></div>' + nav('inicio') + '</section>';
+    },
+
+    sugestao: function () {
+      return '<section class="tela"><form class="conteudo" id="form-sugestao" novalidate>' +
+        cabecalho('#/inicio', 'Sugestão') +
+        '<div class="grupo folgado"><h1 class="titulo">O que podemos melhorar?</h1>' +
+        '<p class="corpo">Uma ideia, algo que não funcionou, um café que o Ponto leu errado. Tudo ajuda.</p></div>' +
+        '<label class="campo-form" for="f-sugestao"><span class="rotulo">Sua mensagem</span>' +
+        '<textarea id="f-sugestao" name="texto" rows="6" maxlength="1000" required placeholder="Ex.: queria um método para a Aeropress"></textarea></label>' +
+        '<p class="nota-metodo">É anônimo. Não coloque nome, telefone ou outros dados pessoais.</p>' +
+        '<button type="submit" class="btn" style="margin-top:auto"' + (sessao.enviando ? ' disabled' : '') + '>' + (sessao.enviando ? 'Enviando…' : 'Enviar') + '</button>' +
+        '</form><div class="aviso" id="aviso" role="status"></div></section>';
     },
 
     registrar: function () {
@@ -661,7 +702,7 @@
         ficha([['Nota média', media.toFixed(1).replace('.', ','), 'de 5', true], ['No ponto', bons, bons === 1 ? 'vez' : 'vezes'], ['Método', achar(METODOS, met.id).rotulo, ''], ['Xícaras', n, '']]) +
         '<div class="grupo"><span class="rotulo">O que o Ponto percebeu</span><ul class="percebido">' + lista + '</ul></div>' +
         '<div class="grupo folgado"><span class="rotulo">Seu próximo degrau</span>' + degrau() + '</div>' +
-        '<a class="btn secundario" href="#/historico">Ver minhas xícaras</a>' +
+        '<a class="btn secundario" href="#/historico">Ver minhas xícaras</a>' + linkSugestao() +
         '</div>' + nav('paladar') + '</section>';
     },
 
@@ -754,7 +795,7 @@
     if (r === 'abertura') iniciarPasseio();
     var nova = app.querySelector('.tela');
     if (nova) nova.scrollTop = y;
-    var titulos = { abertura: 'Ponto — Encontre o seu ponto', inicio: 'Início · Ponto', registrar: 'Registrar · Ponto', ajuste: 'Ajuste · Ponto', paladar: 'Meu paladar · Ponto', confirmar: 'Confira os dados · Ponto', historico: 'Minhas xícaras · Ponto', comunidade: 'Comunidade · Ponto' };
+    var titulos = { abertura: 'Ponto — Encontre o seu ponto', inicio: 'Início · Ponto', registrar: 'Registrar · Ponto', ajuste: 'Ajuste · Ponto', paladar: 'Meu paladar · Ponto', confirmar: 'Confira os dados · Ponto', historico: 'Minhas xícaras · Ponto', sugestao: 'Sugestão · Ponto', comunidade: 'Comunidade · Ponto' };
     document.title = titulos[r];
   }
 
@@ -788,6 +829,12 @@
       return;
     }
     else if (acao === 'compartilhar') { compartilhar(); return; }
+    else if (acao === 'instalar') {
+      var ev = sessao.instalar; if (!ev) return;
+      ev.prompt(); (ev.userChoice || Promise.resolve()).then(function () { sessao.instalar = null; render(true); });
+      return;
+    }
+    else if (acao === 'fechar-instalar') { estado.instalarFechado = true; }
     else if (acao === 'loja') { ev.preventDefault(); avisar('Link do parceiro ainda não configurado.'); return; }
     else if (acao === 'salvar') {
       estado.salvo = { metodo: estado.metodo, sintoma: estado.sintoma };
@@ -897,7 +944,28 @@
     location.hash = '#/registrar';
   });
 
+  var origemSugestao = 'inicio';
+  app.addEventListener('submit', function (ev) {
+    if (ev.target.id !== 'form-sugestao') return;
+    ev.preventDefault();
+    var texto = String(new FormData(ev.target).get('texto') || '').trim();
+    if (texto.length < 3) { avisar('Escreva um pouco mais.'); return; }
+    sessao.enviando = true; render(true);
+    fetch('/api/sugestao', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ texto: texto, tela: origemSugestao, metodo: estado.metodo, xicaras: estado.historico.length }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) throw new Error(d.mensagem || 'Não consegui enviar agora.'); }); })
+      .then(function () { sessao.enviando = false; location.hash = '#/inicio'; setTimeout(function () { avisar('Recebido. Obrigado!'); }, 50); })
+      .catch(function (e) {
+        sessao.enviando = false; render(true);
+        var campo = document.getElementById('f-sugestao'); if (campo) campo.value = texto;
+        avisar(e.message && e.message !== 'Failed to fetch' ? e.message : 'Sem conexão. Tente de novo.');
+      });
+  });
+
+  var rotaAnterior = rota();
   window.addEventListener('hashchange', function () {
+    if (rota() === 'sugestao' && rotaAnterior !== 'sugestao') origemSugestao = rotaAnterior;
+    rotaAnterior = rota();
     sessao.apagar = false; render(false);
     // Visitas anônimas (Vercel Web Analytics): cada tela do app conta como uma página
     try { if (window.va) window.va('pageview', { route: '/app/' + rota(), path: '/app/' + rota() }); } catch (e) { /* ignora */ }
