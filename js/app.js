@@ -52,7 +52,7 @@
       receita: { cafe: 15, agua: 250, temp: 93, tempo: '3' }, rotTemp: 'ferveu + 20 s',
       dicas: [
         { t: 'Molhe todo o pó primeiro', d: 'Um pouco de água em círculos, espere 30 segundos e continue.', p: 'chaleira' },
-        { t: 'Moagem mais uniforme', d: 'Moedor de lâmina deixa pedaços desiguais; prefira mó.', p: 'moedor' },
+        { t: 'Moagem mais uniforme', d: 'Moedor de hélice, que gira como liquidificador, deixa pedaços de tamanhos diferentes. Se puder, use um moedor de discos, que mói por igual. Comprando já moído, peça moagem para coado.', p: 'moedor' },
         { t: 'Não esprema o coador', d: 'Deixe escorrer sozinho até o fim.', p: 'coador-pano' }
       ]
     },
